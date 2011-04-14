@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CrossWord
 {
@@ -40,35 +43,56 @@ namespace CrossWord
             cb.AddStartWord(10, 14);
         }
 
-        public static void Main(string[] args)
+        static void oldTest()
         {
-            DateTime startTime = DateTime.Now;
-            //create dictionary
-            var dict = new Dictionary("../../words");
             //prepare cross board
             ICrossBoard cb = new CrossBoard();
             CreateCross(cb);
-
+            var dict = new Dictionary("../../dict/cz", cb.MaxWordLength);
             cb.Preprocess(dict);
 
             CrossPattern cp = cb.GetCrossPattern(32);
             CrossTransformation trans = cp.TryFill("ADELAVOJTAHELA", dict); //length 14
             trans.Transform(cp);
+        }
+
+        static CrossGenerator CreateGenerator(string file, string dictFile, CommandStore commands)
+        {
+            DateTime startTime = DateTime.Now;
+            var cb = CrossBoardCreator.CreateFromFile(file);
+            var dict = new Dictionary(dictFile, cb.MaxWordLength);
+            cb.Preprocess(dict);
+            var gen = new CrossGenerator(dict, cb);
+            gen.SetCommandStore(commands);
+            return gen;
+        }
+
+        public static void Main(string[] args)
+        {
+            DateTime startTime = DateTime.Now;
+
+            var commands = new CommandStore();
+            var generators = new List<CrossGenerator>
+                {
+                    CreateGenerator("../../templates/Template1.txt", "../../dict/cz", commands),
+                    CreateGenerator("../../templates/Template2.txt", "../../dict/cz", commands),
+                    CreateGenerator("../../templates/Template3.txt", "../../dict/cz", commands),
+                   // createGenerator("../../templates/Template4.txt", "../../dict/cz", commands),
+                   // createGenerator("../../templates/american.txt", "../../dict/cz", commands),
+                   // createGenerator("../../templates/british.txt", "../../dict/words", commands),
+                    CreateGenerator("../../templates/japanese.txt", "../../dict/cz", commands)
+                };
 
             //command reader
-            var commandStore = new CommandStore();
-            var ri = new ReadInput(commandStore);
+
+            var ri = new ReadInput(commands);
 
             ThreadStart readMethod = ri.Run;
             var readThread = new Thread(readMethod);
             readThread.Start();
 
-
-            //create generator
-            var generator = new CrossGenerator(dict, cb);
-            generator.SetCommandStore(commandStore);
-            generator.Generate();
-
+            var tasks = generators.Select(gen1 => Task.Factory.StartNew(gen1.Generate)).ToArray();
+            Task.WaitAll(tasks);
             ri.ShouldStop = true;
 
             TimeSpan timeSpan = DateTime.Now - startTime;

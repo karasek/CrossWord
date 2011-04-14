@@ -1,0 +1,12 @@
+*~
+bin
+obj
+*.user
+*.suo
+*.bak
+*.sln.cache
+_ReSharper*
+TestResults
+*.pidb
+*.usertasks
+*.userprefs

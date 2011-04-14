@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CrossWord
 {
@@ -140,14 +141,8 @@ namespace CrossWord
                 }
             }
             //calculate instantiation count
-            var wordLengthCount = new int[16];
-            var emptyPatterns = new[]
-                                    {
-                                        "", ".", "..", "...", "....", ".....", "......",
-                                        ".......", "........", ".........", "..........", "...........", //7-11
-                                        "............", ".............", "..............", "..............."
-                                    };
-            for (int i = 1; i < 16; i++)
+            var wordLengthCount = new int[aDict.MaxWordLength+1];
+            for (int i = 1; i <= aDict.MaxWordLength; i++)
             {
                 wordLengthCount[i] = aDict.GetWordOfLengthCount(i);
             }
@@ -159,7 +154,7 @@ namespace CrossWord
                 {
                     //empty
                     pattern.InstantiationCount = wordLengthCount[pattern.Length];
-                    pattern.Pattern = emptyPatterns[pattern.Length].ToCharArray();
+                    pattern.Pattern = Enumerable.Repeat('.', pattern.Length).ToArray();
                 }
                 else
                 {
@@ -167,6 +162,11 @@ namespace CrossWord
                     pattern.InstantiationCount = aDict.GetMatchCount(pattern.Pattern);
                 }
             }
+        }
+
+        public int MaxWordLength
+        {
+            get { return Math.Max(_sizeX, _sizeY); }
         }
 
         public int GetPatternCount()

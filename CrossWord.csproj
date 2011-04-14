@@ -76,6 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CrossBoardCreator.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Dictionary.cs" />
@@ -92,6 +93,13 @@
   <ItemGroup>
     <Content Include="Lib\nunit.core.dll" />
     <Content Include="Lib\nunit.framework.dll" />
+    <Content Include="templates\american.txt" />
+    <Content Include="templates\british.txt" />
+    <Content Include="templates\japanese.txt" />
+    <Content Include="templates\template1.txt" />
+    <Content Include="templates\template2.txt" />
+    <Content Include="templates\template3.txt" />
+    <Content Include="templates\template4.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

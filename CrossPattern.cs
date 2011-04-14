@@ -174,13 +174,13 @@ namespace CrossWord
             int instSum = 0;
             for (int i = 0; i < aWord.Length; i++)
             {
-                int adjIndex;
-                if (_isHorizontal)
-                    adjIndex = _startY - AdjacentPatterns[i].StartY;
-                else
-                    adjIndex = _startX - AdjacentPatterns[i].StartX;
                 if (_pattern[i] == '.' && AdjacentPatterns[i] != null)
                 {
+                    int adjIndex;
+                    if (_isHorizontal)
+                        adjIndex = _startY - AdjacentPatterns[i].StartY;
+                    else
+                        adjIndex = _startX - AdjacentPatterns[i].StartX;
                     char c = AdjacentPatterns[i].Pattern[adjIndex];
                     if (c == '.')
                     {

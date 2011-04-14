@@ -5,12 +5,12 @@ namespace CrossWord
     public class CommandStore
     {
         readonly IList<string> _commandQueue;
-        readonly object _lockObject;
+        readonly object _lockObject = new object();
+        readonly object _outLockObject = new object();
         int _count;
 
         public CommandStore()
         {
-            _lockObject = new object();
             _commandQueue = new List<string>();
             _count = 0;
         }
@@ -42,6 +42,11 @@ namespace CrossWord
                 }
             }
             return result;
+        }
+
+        public object Lock
+        {
+            get { return _outLockObject; }
         }
     }
 }

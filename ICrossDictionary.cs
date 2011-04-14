@@ -8,5 +8,6 @@ namespace CrossWord
         int GetWordOfLengthCount(int aLength);
         int GetMatchCount(char[] aPattern);
         void GetMatch(char[] aPattern, IList<string> aMatched);
+        int MaxWordLength { get; }
     }
 }

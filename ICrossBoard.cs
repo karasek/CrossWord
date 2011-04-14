@@ -35,6 +35,8 @@ namespace CrossWord
         void AddStartWord(int aX, int aY);
         void Preprocess(ICrossDictionary aDict);
 
+        int MaxWordLength { get; }
+
         //enumerate patterns
         int GetPatternCount();
         CrossPattern GetCrossPattern(int aIndex);

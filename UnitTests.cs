@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using CrossWord;
 using NUnit.Framework;
 
@@ -31,14 +32,14 @@ namespace Tests
                     cb.AddStartWord(sw);
                 }
             }
-            cb.Preprocess(new Dictionary());
+            cb.Preprocess(new Dictionary(cb.MaxWordLength));
             Assert.AreEqual(10, cb.GetPatternCount());
         }
 
         [Test]
         public void DictionaryTest()
         {
-            ICrossDictionary dict = new Dictionary();
+            ICrossDictionary dict = new Dictionary(4);
             dict.AddWord("duty");
             dict.AddWord("ruty");
             dict.AddWord("suty");
@@ -50,6 +51,24 @@ namespace Tests
             dict.GetMatch("s...".ToCharArray(), al);
             Assert.AreEqual(1, al.Count);
             Assert.AreEqual("suty", al[0]);
+        }
+
+        [Test]
+        public void FileBoardCreatorTest()
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                var w = new StreamWriter(memoryStream);
+                w.WriteLine("--   ");
+                w.WriteLine("-    ");
+                w.WriteLine("     ");
+                w.WriteLine("    -");
+                w.WriteLine("   --");
+                w.Flush();
+                memoryStream.Position = 0;
+                var board = CrossBoardCreator.CreateFromStream(memoryStream);
+                Assert.True(board != null);
+            }
         }
     }
 }

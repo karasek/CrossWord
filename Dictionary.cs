@@ -7,33 +7,41 @@ namespace CrossWord
     public class Dictionary : object, ICrossDictionary
     {
         readonly WordFilter _filter;
-        readonly IList<string>[] _words; //different array list for each word length (1-15)
+        readonly IList<string>[] _words; //different array list for each word length
+        readonly int _maxWordLength;
 
-        public Dictionary()
+        public Dictionary(int maxWordLength)
         {
-            //initialize
-            _words = new IList<string>[16];
-            for (int i = 1; i <= 15; i++)
+            _maxWordLength = maxWordLength;
+            _words = new IList<string>[maxWordLength+1];
+            for (int i = 1; i <= maxWordLength; i++)
             {
                 _words[i] = new List<string>();
             }
 
-            _filter = new WordFilter(1, 15);
+            _filter = new WordFilter(1, maxWordLength);
         }
 
-        public Dictionary(string aFileName) : this()
+        public Dictionary(string aFileName, int maxWordLength)
+            : this(maxWordLength)
         {
             //read streams
-            StreamReader reader = File.OpenText(aFileName);
-            string str = reader.ReadLine();
-            TextInfo ti = new CultureInfo("en-US", false).TextInfo;
-            while (str != null)
+            using (StreamReader reader = File.OpenText(aFileName))
             {
-                //Console.WriteLine(str);
-                AddWord(ti.ToUpper(str));
-                str = reader.ReadLine();
+                string str = reader.ReadLine();
+                TextInfo ti = new CultureInfo("en-US", false).TextInfo;
+                while (str != null)
+                {
+                    //Console.WriteLine(str);
+                    AddWord(ti.ToUpper(str));
+                    str = reader.ReadLine();
+                }
             }
-            reader.Close();
+        }
+
+        public int MaxWordLength
+        {
+            get { return _maxWordLength; }
         }
 
         public void AddWord(string aWord)
