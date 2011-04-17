@@ -198,11 +198,8 @@ namespace CrossWord
                     {
                         return null;
                     }
-                    if (_pattern[i] == '.')
-                    {
-                        trans.AddChange(-1, i, aWord[i]);
-                    }
                 }
+                trans.AddChange(-1, i, aWord[i]);
             }
             trans.AddChangeInst(-1, _instantiationCount, (int)Constants.Unbounded);
             trans.SumInst = instSum;

@@ -70,6 +70,7 @@ namespace CrossWord
                 DoCommands();
                 if (patt != null)
                 {
+                    matchingWords.Clear();
                     _dict.GetMatch(patt.Pattern, matchingWords);
                     var succTrans = new List<CrossTransformation>();
                     foreach (string t in matchingWords)

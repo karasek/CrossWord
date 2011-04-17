@@ -1,3 +1,28 @@
-Creating crossword for given grid, so far grid creation is not automatic yet, and also missing good dictionary.
+Creating crossword for given grid
 
-Detailed description of used algoritm is in CrossWord.pdf
+Detailed description of used algoritm is in doc/CrossWord.pdf
+
+sample output for templates/british.txt
+
+S C A R - S U P E R S O N I C
+- A R E - T - - X - P - O - E
+I N T E G R A L I Z A T I O N
+- D - D - U - - L - R - S - T
+R E D U C T A S E - S C E N E
+- L - C - H - H - P - O - - R
+S A G A M I - A R R A N G E S
+- - - T - O - R - I - C - - -
+B O L I O U - P R O P I N E D
+O - - V - S - I - R - L - A -
+S O B E R - S E M I M I C R O
+S - R - U - C - - Z - A - P -
+I N A P P R O P R I A T E L Y
+E - Y - E - U - - N - E - U -
+S U S P E C T I N G - S A G S
+
+TODO:
+commandline api
+support for puzzle inside templates
+automatic puzzle placing
+speedup
+dictionary with definitions

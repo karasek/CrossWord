@@ -43,6 +43,7 @@ namespace Tests
             dict.AddWord("duty");
             dict.AddWord("ruty");
             dict.AddWord("suty");
+            dict.AddWord("ab");
 
             int count = dict.GetMatchCount("..ty".ToCharArray());
             Assert.AreEqual(3, count);

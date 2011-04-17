@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -8,17 +9,22 @@ namespace CrossWord
     {
         readonly WordFilter _filter;
         readonly IList<string>[] _words; //different array list for each word length
+        readonly WordIndex[] _indexes;
         readonly int _maxWordLength;
 
         public Dictionary(int maxWordLength)
         {
             _maxWordLength = maxWordLength;
-            _words = new IList<string>[maxWordLength+1];
+            _words = new List<string>[maxWordLength + 1];
             for (int i = 1; i <= maxWordLength; i++)
             {
                 _words[i] = new List<string>();
             }
-
+            _indexes = new WordIndex[maxWordLength + 1];
+            for (int i = 1; i <= maxWordLength; i++)
+            {
+                _indexes[i] = new WordIndex(i);
+            }
             _filter = new WordFilter(1, maxWordLength);
         }
 
@@ -46,10 +52,9 @@ namespace CrossWord
 
         public void AddWord(string aWord)
         {
-            if (_filter.Filter(aWord))
-            {
-                _words[aWord.Length].Add(aWord);
-            }
+            if (!_filter.Filter(aWord)) return;
+            _indexes[aWord.Length].IndexWord(aWord, _words[aWord.Length].Count);
+            _words[aWord.Length].Add(aWord);
         }
 
         public int GetWordOfLengthCount(int aLength)
@@ -57,46 +62,37 @@ namespace CrossWord
             return _words[aLength].Count;
         }
 
-        public int GetMatchCount(char[] aPattern)
+        bool IsEmptyPattern(char[] aPattern)
         {
-            int count = 0;
-            IList<string> words = _words[aPattern.Length];
-            foreach(var w in words)
+            if (aPattern==null) return true;
+            foreach (var c in aPattern)
             {
-                if (Match(aPattern, w))
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
-
-        public void GetMatch(char[] aPattern, IList<string> matched)
-        {
-            matched.Clear();
-            IList<string> words = _words[aPattern.Length];
-            foreach(var w in words)
-            {
-                if (Match(aPattern, w))
-                {
-                   matched.Add(w);
-                }
-            }
-        }
-
-
-        static bool Match(char[] aPattern, string aWord)
-        {
-            //the length must be correct
-            int len = aPattern.Length;
-            for (int i = 0; i < len; i++)
-            {
-                if (aPattern[i] != '.' && aPattern[i] != aWord[i])
-                {
-                    return false;
-                }
+                if (c!='.') return false;
             }
             return true;
+        }
+
+        public int GetMatchCount(char[] aPattern)
+        {
+            if (IsEmptyPattern(aPattern))
+                return _words[aPattern.Length].Count;
+            var indexes = _indexes[aPattern.Length].GetMatchingIndexes(aPattern);
+            return indexes != null ? indexes.Count : 0;
+        }
+
+        public void GetMatch(char[] aPattern, List<string> matched)
+        {
+            if (IsEmptyPattern(aPattern))
+            {
+                matched.AddRange(_words[aPattern.Length]);
+                return;
+            }
+            var indexes = _indexes[aPattern.Length].GetMatchingIndexes(aPattern);
+            if (indexes == null) return;
+            foreach (var idx in indexes)
+            {
+                matched.Add(_words[aPattern.Length][idx]);
+            }
         }
     }
 }

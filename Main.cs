@@ -75,14 +75,13 @@ namespace CrossWord
             var generators = new List<CrossGenerator>
                 {
                     CreateGenerator("../../templates/Template1.txt", "../../dict/cz", commands),
-                    CreateGenerator("../../templates/Template2.txt", "../../dict/cz", commands),
+                    CreateGenerator("../../templates/Template2.txt", "../../dict/words", commands),
                     CreateGenerator("../../templates/Template3.txt", "../../dict/cz", commands),
-                   // createGenerator("../../templates/Template4.txt", "../../dict/cz", commands),
-                   // createGenerator("../../templates/american.txt", "../../dict/cz", commands),
-                   // createGenerator("../../templates/british.txt", "../../dict/words", commands),
+                    CreateGenerator("../../templates/Template4.txt", "../../dict/cz", commands),
+                   // CreateGenerator("../../templates/american.txt", "../../dict/words", commands),
+                    CreateGenerator("../../templates/british.txt", "../../dict/words", commands),
                     CreateGenerator("../../templates/japanese.txt", "../../dict/cz", commands)
                 };
-
             //command reader
 
             var ri = new ReadInput(commands);

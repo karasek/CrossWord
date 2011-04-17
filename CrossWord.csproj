@@ -89,6 +89,7 @@
     <Compile Include="CrossPattern.cs" />
     <Compile Include="CommandStore.cs" />
     <Compile Include="ReadInput.cs" />
+    <Compile Include="WordIndex.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Lib\nunit.core.dll" />
