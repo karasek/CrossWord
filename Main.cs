@@ -78,7 +78,7 @@ namespace CrossWord
                     CreateGenerator("../../templates/Template2.txt", "../../dict/words", commands),
                     CreateGenerator("../../templates/Template3.txt", "../../dict/cz", commands),
                     CreateGenerator("../../templates/Template4.txt", "../../dict/cz", commands),
-                   // CreateGenerator("../../templates/american.txt", "../../dict/words", commands),
+                    CreateGenerator("../../templates/american.txt", "../../dict/words", commands),
                     CreateGenerator("../../templates/british.txt", "../../dict/words", commands),
                     CreateGenerator("../../templates/japanese.txt", "../../dict/cz", commands)
                 };

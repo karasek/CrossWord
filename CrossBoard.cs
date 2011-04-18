@@ -259,10 +259,34 @@ namespace CrossWord
                 {
                     ic = 1;
                 }
-                Console.WriteLine("{0} : {1}", new string(p.Pattern), ic);
+                Console.WriteLine("{0} : {1} at [{2},{3}]", new string(p.Pattern), ic, p.StartX, p.StartY);
             }
             Console.WriteLine();
         }
 
+        public void CheckPatternValidity()
+        {
+            foreach (var p in _horizontalPatterns)
+            {
+                for (int i = 0; i < p.AdjacentPatterns.Length; i++)
+                {
+                    var ap = p.AdjacentPatterns[i];
+                    if (ap == null) continue;
+                    if (ap.Pattern[p.StartY - ap.StartY] != p.Pattern[i])
+                        throw new Exception("X/Y inconsistency");
+                }
+            }
+
+            foreach (var p in _verticalPatterns)
+            {
+                for (int i = 0; i < p.AdjacentPatterns.Length; i++)
+                {
+                    var ap = p.AdjacentPatterns[i];
+                    if (ap == null) continue;
+                    if (ap.Pattern[p.StartX - ap.StartX] != p.Pattern[i])
+                        throw new Exception("Y/X inconsistency");
+                }
+            }
+        }
     }
 }

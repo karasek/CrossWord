@@ -23,6 +23,7 @@ namespace CrossWord
 
         void DoCommands()
         {
+            //_board.CheckPatternValidity();
             if (_commandStore != null && _commandStore.Count > 0)
             {
                 while (_commandStore.Count > 0)
@@ -36,6 +37,7 @@ namespace CrossWord
                         Console.WriteLine("h - show this help");
                         Console.WriteLine("d - display cross");
                         Console.WriteLine("p - display patterns");
+                        Console.WriteLine("c - check");
                     }
                     else if (command.Equals("d"))
                     {
@@ -44,6 +46,10 @@ namespace CrossWord
                     else if (command.Equals("p"))
                     {
                         _board.OutputPatternsToConsole();
+                    }
+                    else if (command.Equals("c"))
+                    {
+                        _board.CheckPatternValidity();
                     }
                     else
                     {

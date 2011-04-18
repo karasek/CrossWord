@@ -48,5 +48,6 @@ namespace CrossWord
 
         void OutputToConsole();
         void OutputPatternsToConsole();
+        void CheckPatternValidity();
     }
 }
