@@ -33,7 +33,7 @@ namespace Tests
                 }
             }
             cb.Preprocess(new Dictionary(cb.MaxWordLength));
-            Assert.AreEqual(10, cb.GetPatternCount());
+            Assert.AreEqual(8, cb.GetPatternCount());
         }
 
         [Test]

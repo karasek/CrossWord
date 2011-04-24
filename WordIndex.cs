@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace CrossWord
 {
     public class WordIndex
     {
-        readonly IDictionary<char, ICollection<int>>[] _index;
+        readonly IDictionary<char, SkipList>[] _index;
         readonly int _wordLength;
 
         public WordIndex(int wordLength)
         {
             _wordLength = wordLength;
-            _index = new IDictionary<char, ICollection<int>>[wordLength + 1];
+            _index = new IDictionary<char, SkipList>[wordLength + 1];
             for (int i = 0; i <= wordLength; i++)
             {
-                _index[i] = new Dictionary<char, ICollection<int>>();
+                _index[i] = new Dictionary<char, SkipList>();
             }
         }
 
@@ -26,26 +25,28 @@ namespace CrossWord
             for (int i = 0; i < word.Length; i++)
             {
                 var dict = _index[i];
-                ICollection<int> list;
+                SkipList list;
                 if (dict.TryGetValue(word[i], out list))
                 {
                     list.Add(index);
                 }
                 else
                 {
-                    dict.Add(word[i], new List<int> { index });
+                    list = new SkipList();
+                    dict.Add(word[i], list);
+                    list.Add(index);
                 }
             }
         }
 
         public ICollection<int> GetMatchingIndexes(char[] pattern)
         {
-            IList<ICollection<int>> toMerge = new List<ICollection<int>>();
+            IList<SkipList> toMerge = new List<SkipList>();
             for (int i = 0; i < pattern.Length; i++)
             {
                 char c = pattern[i];
                 if (c == '.') continue;
-                ICollection<int> list;
+                SkipList list;
                 if (!_index[i].TryGetValue(c, out list))
                     return null;
                 toMerge.Add(list);
@@ -53,28 +54,26 @@ namespace CrossWord
             return Merge(toMerge);
         }
 
-        static ICollection<int> Merge(IList<ICollection<int>> lists)
+        static ICollection<int> Merge(IList<SkipList> lists)
         {
             if (lists.Count == 1)
-                return lists[0];
-            var enumerators = new List<IEnumerator<int>>();
+                return lists[0].All();
+            var enumerators = new List<SkipList.SkipListEnumerator>();
             foreach (var list in lists)
             {
-                var en = list.GetEnumerator();
-                if (!en.MoveNext()) return null;
+                var en = list.GetSkipEnumerator();
                 enumerators.Add(en);
             }
             var result = new List<int>();
-            int max = enumerators[0].Current;
+            int max = -1;
             while (true)
             {
             again:
                 foreach (var enumerator in enumerators)
                 {
-                    while (enumerator.Current < max)
+                    if (! enumerator.MoveNextGreaterOrEqual(max))
                     {
-                        if (!enumerator.MoveNext())
-                            return result;
+                        return result;
                     }
                     if (enumerator.Current > max)
                     {
@@ -83,13 +82,10 @@ namespace CrossWord
                     }
                 }
                 result.Add(max);
-                foreach (var enumerator in enumerators)
-                {
-                    if (!enumerator.MoveNext())
-                        return result;
-                    if (enumerator.Current > max)
-                        max = enumerator.Current;
-                }
+                if (enumerators[0].MoveNext())
+                    max = enumerators[0].Current;
+                else
+                    return result;
             }
         }
     }

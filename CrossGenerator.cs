@@ -129,7 +129,8 @@ namespace CrossWord
                 else
                 {
                     Console.WriteLine("Solution has been found.");
-                    _board.OutputToConsole();
+                    lock(_commandStore.Lock)
+                        _board.OutputToConsole();
                     return;
                 }
             }
