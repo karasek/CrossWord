@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CrossWord
+namespace CrossWordTest
 {
     public class CommandStore
     {

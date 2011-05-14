@@ -1,6 +1,6 @@
 using System;
 
-namespace CrossWord
+namespace CrossWordTest
 {
     public class ReadInput
     {

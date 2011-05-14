@@ -7,57 +7,26 @@ namespace CrossWord
     {
         readonly ICrossBoard _board;
         readonly ICrossDictionary _dict;
-        CommandStore _commandStore;
+
+        public delegate void ProgressWatcher(CrossGenerator generator);
+        public event ProgressWatcher Watcher;
+
 
         public CrossGenerator(ICrossDictionary aDict, ICrossBoard aBoard)
         {
             _dict = aDict;
             _board = aBoard;
-            _commandStore = null;
-        }
-
-        public void SetCommandStore(CommandStore aCommandStore)
-        {
-            _commandStore = aCommandStore;
         }
 
         void DoCommands()
         {
-            //_board.CheckPatternValidity();
-            if (_commandStore != null && _commandStore.Count > 0)
+            if (Watcher != null)
             {
-                while (_commandStore.Count > 0)
-                {
-                    string command = _commandStore.PopCommand();
-                    if (command == null) break;
-                    if (command.Equals("h"))
-                    {
-                        //write help
-                        Console.WriteLine("Commands help: ");
-                        Console.WriteLine("h - show this help");
-                        Console.WriteLine("d - display cross");
-                        Console.WriteLine("p - display patterns");
-                        Console.WriteLine("c - check");
-                    }
-                    else if (command.Equals("d"))
-                    {
-                        _board.OutputToConsole();
-                    }
-                    else if (command.Equals("p"))
-                    {
-                        _board.OutputPatternsToConsole();
-                    }
-                    else if (command.Equals("c"))
-                    {
-                        _board.CheckPatternValidity();
-                    }
-                    else
-                    {
-                        Console.WriteLine("unknown command: {0}", command);
-                    }
-                }
+                Watcher(this);
             }
         }
+
+        public ICrossBoard Board { get { return _board; } }
 
         /*
           1. Choosing which pattern to fill (i.e. which variable to solve for).
@@ -65,7 +34,7 @@ namespace CrossWord
           3. Choosing where to backtrack to when we reach an impasse.
          */
 
-        public void Generate()
+        public bool Generate()
         {
             var history = new List<int>();
             var historyTrans = new List<List<CrossTransformation>>();
@@ -105,12 +74,12 @@ namespace CrossWord
                             int last = history.Count - 1;
                             int item = history[last];
                             succTrans = historyTrans[last];
-                            var trans =  succTrans[item];
+                            var trans = succTrans[item];
                             trans.Undo(trans.Pattern);
                             item++;
                             if (item < succTrans.Count)
                             {
-                                var nextTrans =  succTrans[item];
+                                var nextTrans = succTrans[item];
                                 nextTrans.Transform(nextTrans.Pattern);
                                 history[last] = item;
                                 patt = _board.GetMostConstrainedPattern(_dict);
@@ -121,17 +90,13 @@ namespace CrossWord
                         }
                         if (history.Count == 0)
                         {
-                            Console.WriteLine("No solution!");
-                            return;
+                            return false;
                         }
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Solution has been found.");
-                    lock(_commandStore.Lock)
-                        _board.OutputToConsole();
-                    return;
+                    return true;
                 }
             }
         }
