@@ -52,6 +52,8 @@
     <Compile Include="CrossWordProgram.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Dictionary.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="PuzzlePlacer.cs" />
     <Compile Include="SkipList.cs" />
     <Compile Include="WordFilter.cs" />
     <Compile Include="ICrossDictionary.cs" />

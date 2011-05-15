@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CrossWord
 {
-    public class CrossPattern : object
+    public class CrossPattern : ICloneable
     {
         int _instantiationCount;
         bool _isHorizontal;
@@ -77,7 +77,7 @@ namespace CrossWord
             int instSum = 0;
             for (int i = 0; i < aWord.Length; i++)
             {
-                if (_pattern[i] == '.') 
+                if (_pattern[i] == '.')
                 {
                     if (AdjacentPatterns[i] != null)
                     {
@@ -110,6 +110,20 @@ namespace CrossWord
             trans.AddChangeInst(-1, _instantiationCount, (int)Constants.Unbounded);
             trans.SumInst = instSum;
             return trans;
+        }
+
+        public override string ToString()
+        {
+            return (_isHorizontal ? "-" : "|") + string.Format("[{0},{1}]", _startX, _startY) + new string(_pattern);
+        }
+
+        public object Clone()
+        {
+            var result = new CrossPattern(_startX, _startY, _length, _isHorizontal);
+            result._instantiationCount = _instantiationCount;
+            result._pattern = new char[_pattern.Length];
+            Array.Copy(_pattern, result._pattern, _pattern.Length);
+            return result;
         }
     }
 }

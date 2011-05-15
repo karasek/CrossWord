@@ -51,6 +51,7 @@ namespace CrossWord
                     return null;
                 toMerge.Add(list);
             }
+            if (toMerge.Count == 0) return null;
             return Merge(toMerge);
         }
 

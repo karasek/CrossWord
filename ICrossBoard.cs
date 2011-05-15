@@ -1,3 +1,5 @@
+using System;
+
 namespace CrossWord
 {
     public enum Constants
@@ -27,7 +29,7 @@ namespace CrossWord
     /// <summary>
     /// Description of ICrossBoard.
     /// </summary>
-    public interface ICrossBoard
+    public interface ICrossBoard : ICloneable
     {
         //initialization phase
         void SetBoardSize(int aX, int aY);

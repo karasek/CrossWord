@@ -28,19 +28,21 @@ namespace CrossWord
 
     public class CrossBoard : object, ICrossBoard
     {
-        IList<CrossPattern> _horizontalPatterns;
         int _sizeX;
         int _sizeY;
         List<StartWord> _startWords; //StartWord
-        IList<CrossPattern> _verticalPatterns;
+
+        List<CrossPattern> _horizontalPatterns;
+        List<CrossPattern> _verticalPatterns;
 
         public void SetBoardSize(int aX, int aY)
         {
-            _horizontalPatterns = null;
-            _verticalPatterns = null;
-            _startWords = new List<StartWord>();
             _sizeX = aX;
             _sizeY = aY;
+            _startWords = new List<StartWord>();
+
+            _horizontalPatterns = null;
+            _verticalPatterns = null;
         }
 
         public void AddStartWord(StartWord aStartWord)
@@ -287,6 +289,31 @@ namespace CrossWord
                         throw new Exception("Y/X inconsistency");
                 }
             }
+        }
+
+        public object Clone()
+        {
+            var result = new CrossBoard();
+            result.SetBoardSize(_sizeX, _sizeY);
+            result._startWords.AddRange(_startWords);
+            if (_horizontalPatterns != null)
+            {
+                result._horizontalPatterns = new List<CrossPattern>();
+                foreach (var patt in _horizontalPatterns)
+                {
+                    result._horizontalPatterns.Add((CrossPattern)patt.Clone());
+                }
+                result._horizontalPatterns.AddRange(_horizontalPatterns);
+            }
+            if (_verticalPatterns != null)
+            {
+                result._verticalPatterns = new List<CrossPattern>();
+                foreach (var patt in _verticalPatterns)
+                {
+                    result._verticalPatterns.Add((CrossPattern)patt.Clone());
+                }
+            }
+            return result;
         }
     }
 }
