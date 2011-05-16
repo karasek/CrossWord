@@ -114,7 +114,7 @@ namespace CrossWord
             foreach (var boardWithPuzzle in placer.GetAllPossiblePlacements(dictionary))
             {
                 var gen = new CrossGenerator(dictionary, boardWithPuzzle);
-                Task.Factory.StartNew(() =>
+                var t = Task.Factory.StartNew(() =>
                                           {
                                               if (gen.Generate())
                                               {
@@ -122,8 +122,22 @@ namespace CrossWord
                                                   cts.Cancel();
                                               }
                                           }, cts.Token);
+                tasks.Add(t);
+                if (tasks.Count > 100)
+                    break;
             }
-            Task.WaitAll(tasks.ToArray());
+            try
+            {
+                Task.WaitAll(tasks.ToArray());
+            }
+            catch (AggregateException e)
+            {
+                foreach (var exc in e.InnerExceptions)
+                {
+                    if (!(exc is TaskCanceledException))
+                        throw exc;
+                }
+            }
             foreach (var task in tasks)
             {
                 if (task.IsCanceled) continue;

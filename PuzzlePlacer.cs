@@ -45,9 +45,9 @@ namespace CrossWord
                         trans.Transform(patt);
                         if (restPuzzleLength == patt.Length)
                         {
-                            board.OutputToConsole();
-                            yield return (ICrossBoard)board.Clone();
+                            var cloned = (ICrossBoard)board.Clone();
                             trans.Undo(patt);
+                            yield return cloned;
                             continue;
                         }
                         stack.Add(idx + 1);
@@ -65,7 +65,7 @@ namespace CrossWord
                 var appTr = appliedTransformations.Back();
                 appliedTransformations.Pop();
                 appTr.Undo(appTr.Pattern);
-                restPuzzleLength -= appTr.Pattern.Length;
+                restPuzzleLength += appTr.Pattern.Length;
             }
             yield break;
         }

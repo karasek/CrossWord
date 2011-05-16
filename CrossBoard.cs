@@ -129,21 +129,7 @@ namespace CrossWord
                     _verticalPatterns.Add(cp);
                 }
             }
-            //find adjacent patterns
-            foreach (var hor in _horizontalPatterns)
-            {
-                foreach (var ver in _verticalPatterns)
-                {
-                    if (ver.StartX >= hor.StartX && ver.StartX < hor.StartX + hor.Length &&
-                        hor.StartY >= ver.StartY && hor.StartY < ver.StartY + ver.Length)
-                    {
-                        //adjacent
-                        hor.AdjacentPatterns[ver.StartX - hor.StartX] = ver;
-                        ver.AdjacentPatterns[hor.StartY - ver.StartY] = hor;
-                        //Console.WriteLine("New dep for startX: {0} startY: {1} and startX {2} start Y {3} ",hor.StartX, hor.StartY, ver.StartX, ver.StartY);
-                    }
-                }
-            }
+            BindAdjacentPatterns();
             //calculate instantiation count
             var wordLengthCount = new int[aDict.MaxWordLength + 1];
             for (int i = 1; i <= aDict.MaxWordLength; i++)
@@ -164,6 +150,24 @@ namespace CrossWord
                 {
                     //already set some letters
                     pattern.InstantiationCount = aDict.GetMatchCount(pattern.Pattern);
+                }
+            }
+        }
+
+        void BindAdjacentPatterns()
+        {
+            foreach (var hor in _horizontalPatterns)
+            {
+                foreach (var ver in _verticalPatterns)
+                {
+                    if (ver.StartX >= hor.StartX && ver.StartX < hor.StartX + hor.Length &&
+                        hor.StartY >= ver.StartY && hor.StartY < ver.StartY + ver.Length)
+                    {
+                        //adjacent
+                        hor.AdjacentPatterns[ver.StartX - hor.StartX] = ver;
+                        ver.AdjacentPatterns[hor.StartY - ver.StartY] = hor;
+                        //Console.WriteLine("New dep for startX: {0} startY: {1} and startX {2} start Y {3} ",hor.StartX, hor.StartY, ver.StartX, ver.StartY);
+                    }
                 }
             }
         }
@@ -296,22 +300,19 @@ namespace CrossWord
             var result = new CrossBoard();
             result.SetBoardSize(_sizeX, _sizeY);
             result._startWords.AddRange(_startWords);
-            if (_horizontalPatterns != null)
+            if (_horizontalPatterns != null && _verticalPatterns != null)
             {
                 result._horizontalPatterns = new List<CrossPattern>();
                 foreach (var patt in _horizontalPatterns)
                 {
-                    result._horizontalPatterns.Add((CrossPattern)patt.Clone());
+                    result._horizontalPatterns.Add((CrossPattern) patt.Clone());
                 }
-                result._horizontalPatterns.AddRange(_horizontalPatterns);
-            }
-            if (_verticalPatterns != null)
-            {
                 result._verticalPatterns = new List<CrossPattern>();
                 foreach (var patt in _verticalPatterns)
                 {
-                    result._verticalPatterns.Add((CrossPattern)patt.Clone());
+                    result._verticalPatterns.Add((CrossPattern) patt.Clone());
                 }
+                result.BindAdjacentPatterns();
             }
             return result;
         }
