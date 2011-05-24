@@ -39,7 +39,8 @@ namespace CrossWord
                     var patt = patterns[idx];
                     if (restPuzzleLength < patt.Length) continue;
                     if (restPuzzleLength - patt.Length == 1) continue;
-                    var trans = patt.TryFill(puzzle.Substring(puzzle.Length - restPuzzleLength, patt.Length), dictionary);
+                    var trans = patt.TryFillPuzzle(puzzle.Substring(puzzle.Length - restPuzzleLength,
+                                                   patt.Length), dictionary);
                     if (trans != null)
                     {
                         trans.Transform(patt);

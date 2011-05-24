@@ -39,6 +39,7 @@ namespace CrossWord
             var history = new List<int>();
             var historyTrans = new List<List<CrossTransformation>>();
             var matchingWords = new List<string>();
+            var usedWords = new HashSet<string>();
             CrossPattern patt = _board.GetMostConstrainedPattern(_dict);
             while (true)
             {
@@ -50,6 +51,7 @@ namespace CrossWord
                     var succTrans = new List<CrossTransformation>();
                     foreach (string t in matchingWords)
                     {
+                        if (usedWords.Contains(t)) continue;
                         CrossTransformation trans = patt.TryFill(t, _dict);
                         if (trans != null)
                         {
@@ -61,6 +63,7 @@ namespace CrossWord
                     {
                         succTrans.Sort(new CrossTransformationComparer());
                         var trans = succTrans[0];
+                        usedWords.Add(trans.Word);
                         trans.Transform(patt);
                         historyTrans.Add(succTrans);
                         history.Add(0);
@@ -76,10 +79,12 @@ namespace CrossWord
                             succTrans = historyTrans[last];
                             var trans = succTrans[item];
                             trans.Undo(trans.Pattern);
+                            usedWords.Remove(trans.Word);
                             item++;
                             if (item < succTrans.Count)
                             {
                                 var nextTrans = succTrans[item];
+                                usedWords.Add(nextTrans.Word);
                                 nextTrans.Transform(nextTrans.Pattern);
                                 history[last] = item;
                                 patt = _board.GetMostConstrainedPattern(_dict);

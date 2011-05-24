@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -70,6 +71,12 @@ namespace CrossWordTest
             return gen;
         }
 
+        static StreamWriter OpenConsoleWriter()
+        {
+            var w = new StreamWriter(Console.OpenStandardOutput(), Console.OutputEncoding) { AutoFlush = true };
+            return w;
+        }
+
         static void GeneratorWatcher(CrossGenerator generator)
         {
             while (_commandStore.Count > 0)
@@ -87,11 +94,13 @@ namespace CrossWordTest
                 }
                 else if (command.Equals("d"))
                 {
-                    generator.Board.OutputToConsole();
+                    using (var w = OpenConsoleWriter())
+                        generator.Board.WriteTo(w);
                 }
                 else if (command.Equals("p"))
                 {
-                    generator.Board.OutputPatternsToConsole();
+                    using (var w = OpenConsoleWriter())
+                        generator.Board.WritePatternsTo(w);
                 }
                 else if (command.Equals("c"))
                 {
@@ -110,7 +119,8 @@ namespace CrossWordTest
             lock (commands.Lock)
             {
                 Console.WriteLine(found ? "Solution found:" : "Solution not found:");
-                generator.Board.OutputToConsole();
+                using (var w = OpenConsoleWriter())
+                    generator.Board.WriteTo(w);
             }
         }
 

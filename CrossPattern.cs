@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace CrossWord
 {
@@ -10,16 +9,8 @@ namespace CrossWord
         int _length;
         char[] _pattern;
 
-        int _startX;
-
-        int _startY;
-
-        public CrossPattern()
-        {
-            _startX = _startY = -1;
-            _instantiationCount = 0;
-            _length = 0;
-        }
+        readonly int _startX;
+        readonly int _startY;
 
         public CrossPattern(int startX, int startY, int length, bool isHorizontal)
         {
@@ -38,19 +29,17 @@ namespace CrossWord
         public int StartX
         {
             get { return _startX; }
-            set { _startX = value; }
         }
 
         public int StartY
         {
             get { return _startY; }
-            set { _startY = value; }
         }
 
         public int Length
         {
             get { return _length; }
-            set
+            private set
             {
                 _length = value;
                 AdjacentPatterns = new CrossPattern[_length];
@@ -71,11 +60,21 @@ namespace CrossWord
 
         public CrossPattern[] AdjacentPatterns { get; private set; }
 
-        public CrossTransformation TryFill(string aWord, ICrossDictionary aDict)
+        public CrossTransformation TryFillPuzzle(string word, ICrossDictionary dict)
         {
-            var trans = new CrossTransformation();
+            return TryFill(word, dict, true);
+        }
+
+        public CrossTransformation TryFill(string word, ICrossDictionary dict)
+        {
+            return TryFill(word, dict, false);
+        }
+
+        CrossTransformation TryFill(string word, ICrossDictionary dict, bool puzzle)
+        {
+            var trans = new CrossTransformation(word);
             int instSum = 0;
-            for (int i = 0; i < aWord.Length; i++)
+            for (int i = 0; i < word.Length; i++)
             {
                 if (_pattern[i] == '.')
                 {
@@ -90,21 +89,21 @@ namespace CrossWord
                         if (c == '.')
                         {
                             char[] adjacent = AdjacentPatterns[i].Pattern;
-                            adjacent[adjIndex] = aWord[i];
-                            int newInstCount = aDict.GetMatchCount(adjacent);
+                            adjacent[adjIndex] = word[i];
+                            int newInstCount = dict.GetMatchCount(adjacent);
                             adjacent[adjIndex] = '.';
                             if (newInstCount == 0)
                                 return null;
                             instSum += newInstCount;
                             trans.AddChangeInst(i, AdjacentPatterns[i].InstantiationCount, newInstCount);
-                            trans.AddChange(i, adjIndex, aWord[i]);
+                            trans.AddChange(i, adjIndex, word[i]);
                         }
-                        else if (c != aWord[i])
+                        else if (puzzle || c != word[i])
                         {
                             return null;
                         }
                     }
-                    trans.AddChange(-1, i, aWord[i]);
+                    trans.AddChange(-1, i, word[i]);
                 }
             }
             trans.AddChangeInst(-1, _instantiationCount, (int)Constants.Unbounded);
@@ -114,7 +113,7 @@ namespace CrossWord
 
         public override string ToString()
         {
-            return (_isHorizontal ? "-" : "|") + string.Format("[{0},{1}]", _startX, _startY) + new string(_pattern);
+            return (_isHorizontal ? "-" : "|") + string.Format(",{0},{1},", _startX, _startY) + new string(_pattern);
         }
 
         public object Clone()

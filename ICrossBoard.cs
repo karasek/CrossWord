@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace CrossWord
 {
@@ -48,8 +49,8 @@ namespace CrossWord
         //get pattern at given position
         CrossPattern GetCrossPattern(int aStartX, int aStartY, Orientation aOrientation);
 
-        void OutputToConsole();
-        void OutputPatternsToConsole();
+        void WriteTo(StreamWriter writer);
+        void WritePatternsTo(StreamWriter writer);
         void CheckPatternValidity();
     }
 }

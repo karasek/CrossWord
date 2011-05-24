@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace CrossWord
@@ -212,7 +213,7 @@ namespace CrossWord
         }
 
 
-        public void OutputToConsole()
+        public void WriteTo(StreamWriter writer)
         {
             var board = new char[_sizeX, _sizeY];
 
@@ -243,31 +244,26 @@ namespace CrossWord
                     }
                 }
             }
+
             for (int y = 0; y < _sizeY; y++)
             {
                 string row = "";
                 for (int x = 0; x < _sizeX; x++)
                     row += board[x, y] + " ";
-                Console.WriteLine("{0:00}: {1}", y, row);
+                writer.WriteLine("{0:00}: {1}", y, row);
             }
-            Console.WriteLine("");
+            writer.WriteLine();
+
         }
 
-        public void OutputPatternsToConsole()
+        public void WritePatternsTo(StreamWriter writer)
         {
-            Console.WriteLine("Patterns: ");
+            writer.WriteLine("Patterns: ");
             int cnt = GetPatternCount();
             for (int i = 0; i < cnt; i++)
             {
-                CrossPattern p = GetCrossPattern(i);
-                int ic = p.InstantiationCount;
-                if (ic == (int)Constants.Unbounded)
-                {
-                    ic = 1;
-                }
-                Console.WriteLine("{0} : {1} at [{2},{3}]", new string(p.Pattern), ic, p.StartX, p.StartY);
+                writer.WriteLine(GetCrossPattern(i));
             }
-            Console.WriteLine();
         }
 
         public void CheckPatternValidity()
@@ -305,12 +301,12 @@ namespace CrossWord
                 result._horizontalPatterns = new List<CrossPattern>();
                 foreach (var patt in _horizontalPatterns)
                 {
-                    result._horizontalPatterns.Add((CrossPattern) patt.Clone());
+                    result._horizontalPatterns.Add((CrossPattern)patt.Clone());
                 }
                 result._verticalPatterns = new List<CrossPattern>();
                 foreach (var patt in _verticalPatterns)
                 {
-                    result._verticalPatterns.Add((CrossPattern) patt.Clone());
+                    result._verticalPatterns.Add((CrossPattern)patt.Clone());
                 }
                 result.BindAdjacentPatterns();
             }

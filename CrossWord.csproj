@@ -64,7 +64,12 @@
     <Compile Include="WordIndex.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Lib\NDesk.Options.dll" />
+    <Content Include="Lib\log4net.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lib\NDesk.Options.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Lib\nunit.core.dll" />
     <Content Include="Lib\nunit.framework.dll" />
     <Content Include="templates\american.txt" />

@@ -16,16 +16,20 @@ namespace CrossWord
     {
         readonly IList<int> _changes;
         readonly IList<int> _instChanges;
+        readonly string _word;
 
-        public CrossTransformation()
+        public CrossTransformation(string word)
         {
             _changes = new List<int>();
             _instChanges = new List<int>();
+            _word = word;
         }
 
         public int SumInst { get; set; }
 
         public CrossPattern Pattern { get; set; }
+
+        public string Word { get { return _word; } }
 
         public void Transform(CrossPattern aCrossPattern)
         {

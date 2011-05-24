@@ -2,27 +2,96 @@ Creating crossword for given grid
 
 Detailed description of used algoritm is in doc/CrossWord.pdf
 
-sample output for templates/british.txt
+Example:
 
-S C A R - S U P E R S O N I C
-- A R E - T - - X - P - O - E
-I N T E G R A L I Z A T I O N
-- D - D - U - - L - R - S - T
-R E D U C T A S E - S C E N E
-- L - C - H - H - P - O - - R
-S A G A M I - A R R A N G E S
-- - - T - O - R - I - C - - -
-B O L I O U - P R O P I N E D
-O - - V - S - I - R - L - A -
-S O B E R - S E M I M I C R O
-S - R - U - C - - Z - A - P -
-I N A P P R O P R I A T E L Y
-E - Y - E - U - - N - E - U -
-S U S P E C T I N G - S A G S
+CrossWord.exe -i templates\template3.txt -d dict\cz -o out.txt -p "První jarní kvìt"
+
+out.txt:
+
+00: K N O P - K A M - M Š M T 
+01: R E K Ù - O N A - A P E L 
+02: O M Á N - R O M - N E N Í 
+03: K O L E N E - K O C H A T 
+04: - - - B O A - A C H - - - 
+05: A R N Í K - - - H E L C L 
+06: T Y S - - - - - - - E I A 
+07: S K R Y T - - - V C H O D 
+08: - - - A V U - V Ì R - - - 
+09: P R V N Í J - Y T R I U M 
+10: A M O K - M O K - R A D A 
+11: S E L E - U S A - R E I L 
+12: U N I E - L I T - R A N Ý 
+
+Patterns: 
+-,0,0,KNOP
+-,5,0,KAM
+-,9,0,MŠMT
+-,0,1,REKÙ
+-,5,1,ONA
+-,9,1,APEL
+-,0,2,OMÁN
+-,5,2,ROM
+-,9,2,NENÍ
+-,0,3,KOLENE
+-,7,3,KOCHAT
+-,3,4,BOA
+-,7,4,ACH
+-,0,5,ARNÍK
+-,8,5,HELCL
+-,0,6,TYS
+-,10,6,EIA
+-,0,7,SKRYT
+-,8,7,VCHOD
+-,3,8,AVU
+-,7,8,VÌR
+-,0,9,PRVNÍJ
+-,7,9,YTRIUM
+-,0,10,AMOK
+-,5,10,MOK
+-,9,10,RADA
+-,0,11,SELE
+-,5,11,USA
+-,9,11,REIL
+-,0,12,UNIE
+-,5,12,LIT
+-,9,12,RANÝ
+|,0,0,KROK
+|,0,5,ATS
+|,0,9,PASU
+|,1,0,NEMO
+|,1,5,RYK
+|,1,9,RMEN
+|,2,0,OKÁL
+|,2,5,NSR
+|,2,9,VOLI
+|,3,0,PÙNEBÍ
+|,3,7,YANKEE
+|,4,3,NOK
+|,4,7,TVÍ
+|,5,0,KOREA
+|,5,8,UJMUL
+|,6,0,ANO
+|,6,10,OSI
+|,7,0,MAMKA
+|,7,8,VYKAT
+|,8,3,OCH
+|,8,7,VÌT
+|,9,0,MANCHE
+|,9,7,CRRRRR
+|,10,0,ŠPEH
+|,10,5,LEH
+|,10,9,IAEA
+|,11,0,MENA
+|,11,5,CIO
+|,11,9,UDIN
+|,12,0,TLÍT
+|,12,5,LAD
+|,12,9,MALÝ
+
+
+
+
 
 TODO:
-commandline api
-support for puzzle inside templates
-automatic puzzle placing
-speedup
-dictionary with definitions
+dictionary with descriptions
+display description in pattern

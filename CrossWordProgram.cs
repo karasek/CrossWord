@@ -109,7 +109,7 @@ namespace CrossWord
         {
             var placer = new PuzzlePlacer(board, puzzle);
             var cts = new CancellationTokenSource();
-            var tasks = new List<Task>();
+            var mre = new ManualResetEvent(false);
             ICrossBoard successFullBoard = null;
             foreach (var boardWithPuzzle in placer.GetAllPossiblePlacements(dictionary))
             {
@@ -120,36 +120,24 @@ namespace CrossWord
                                               {
                                                   successFullBoard = gen.Board;
                                                   cts.Cancel();
+                                                  mre.Set();
                                               }
                                           }, cts.Token);
-                tasks.Add(t);
-                if (tasks.Count > 100)
+                if (cts.IsCancellationRequested)
                     break;
             }
-            try
-            {
-                Task.WaitAll(tasks.ToArray());
-            }
-            catch (AggregateException e)
-            {
-                foreach (var exc in e.InnerExceptions)
-                {
-                    if (!(exc is TaskCanceledException))
-                        throw exc;
-                }
-            }
-            foreach (var task in tasks)
-            {
-                if (task.IsCanceled) continue;
-            }
+            mre.WaitOne();
             return successFullBoard;
         }
 
         static void SaveResultToFile(string outputFile, ICrossBoard resultBoard)
         {
-            // File.OpenWrite(outputFile) //todo
             Log.Info("Solution has been found:");
-            resultBoard.OutputToConsole();
+            using (var writer = new StreamWriter(new FileStream(outputFile, FileMode.Create)))
+            {
+                resultBoard.WriteTo(writer);
+                resultBoard.WritePatternsTo(writer);
+            }
         }
     }
 }
