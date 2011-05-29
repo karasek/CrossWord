@@ -51,6 +51,7 @@ namespace CrossWord
 
         void WriteTo(StreamWriter writer);
         void WritePatternsTo(StreamWriter writer);
+        void WritePatternsTo(StreamWriter writer, ICrossDictionary dictionary);
         void CheckPatternValidity();
     }
 }

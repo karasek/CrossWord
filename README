@@ -4,94 +4,102 @@ Detailed description of used algoritm is in doc/CrossWord.pdf
 
 Example:
 
-CrossWord.exe -i templates\template3.txt -d dict\cz -o out.txt -p "První jarní kvìt"
+CrossWord.exe -i templates\american.txt -d dict\cz -o out.txt -p "First crossword for you"
 
-out.txt:
-
-00: K N O P - K A M - M Š M T 
-01: R E K Ù - O N A - A P E L 
-02: O M Á N - R O M - N E N Í 
-03: K O L E N E - K O C H A T 
-04: - - - B O A - A C H - - - 
-05: A R N Í K - - - H E L C L 
-06: T Y S - - - - - - - E I A 
-07: S K R Y T - - - V C H O D 
-08: - - - A V U - V Ì R - - - 
-09: P R V N Í J - Y T R I U M 
-10: A M O K - M O K - R A D A 
-11: S E L E - U S A - R E I L 
-12: U N I E - L I T - R A N Ý 
+00: P A C E R - O R O N O - R U N T 
+01: E L I D E - K A U A I - A N O A 
+02: W O R D F O R Y - S L A N D E R 
+03: I N C - I R A - C A P R I O L E 
+04: T E A S L E - S O L A C E - - - 
+05: - - D A L - D A M - P E R S E A 
+06: T R I M - B O R A T E D - E A T 
+07: A N A S A R C A - A R - A C R E 
+08: B A N A N A - C S T - M I T - - 
+09: - - - R O T T E R - M O M I S M 
+10: S T R A I T E N - P A R - O C A 
+11: A R A - N I T - S T R A I N E R 
+12: F I R S T C R O S S - S K A N K 
+13: E P E E - E A R E D - S E L E S 
 
 Patterns: 
--,0,0,KNOP
--,5,0,KAM
--,9,0,MŠMT
--,0,1,REKÙ
--,5,1,ONA
--,9,1,APEL
--,0,2,OMÁN
--,5,2,ROM
--,9,2,NENÍ
--,0,3,KOLENE
--,7,3,KOCHAT
--,3,4,BOA
--,7,4,ACH
--,0,5,ARNÍK
--,8,5,HELCL
--,0,6,TYS
--,10,6,EIA
--,0,7,SKRYT
--,8,7,VCHOD
--,3,8,AVU
--,7,8,VÌR
--,0,9,PRVNÍJ
--,7,9,YTRIUM
--,0,10,AMOK
--,5,10,MOK
--,9,10,RADA
--,0,11,SELE
--,5,11,USA
--,9,11,REIL
--,0,12,UNIE
--,5,12,LIT
--,9,12,RANÝ
-|,0,0,KROK
-|,0,5,ATS
-|,0,9,PASU
-|,1,0,NEMO
-|,1,5,RYK
-|,1,9,RMEN
-|,2,0,OKÁL
-|,2,5,NSR
-|,2,9,VOLI
-|,3,0,PÙNEBÍ
-|,3,7,YANKEE
-|,4,3,NOK
-|,4,7,TVÍ
-|,5,0,KOREA
-|,5,8,UJMUL
-|,6,0,ANO
-|,6,10,OSI
-|,7,0,MAMKA
-|,7,8,VYKAT
-|,8,3,OCH
-|,8,7,VÌT
-|,9,0,MANCHE
-|,9,7,CRRRRR
-|,10,0,ŠPEH
-|,10,5,LEH
-|,10,9,IAEA
-|,11,0,MENA
-|,11,5,CIO
-|,11,9,UDIN
-|,12,0,TLÍT
-|,12,5,LAD
-|,12,9,MALÝ
-
-
-
-
-
-TODO:
-dictionary with descriptions
-display description in pattern
+-,0,0,PACER,pacemaker
+-,6,0,ORONO,town (generic term)
+-,12,0,RUNT,half-pint
+-,0,1,ELIDE,exclude (generic term)
+-,6,1,KAUAI,Kauai Island
+-,12,1,ANOA,dwarf buffalo
+-,0,2,WORDFORY,[PUZZLE]
+-,9,2,SLANDER,asperse
+-,0,3,INC,Iraqi National Congress
+-,4,3,IRA,anger
+-,8,3,CAPRIOLE,caper
+-,0,4,TEASLE,teasel
+-,7,4,SOLACE,comfort
+-,2,5,DAL,dekaliter
+-,6,5,DAM,dike
+-,10,5,PERSEA,genus persea
+-,0,6,TRIM,bring down
+-,5,6,BORATED,mineral (related term)
+-,13,6,EAT,consume
+-,0,7,ANASARCA,edema (generic term)
+-,9,7,AR,argon
+-,12,7,ACRE,accho
+-,0,8,BANANA,banana tree
+-,7,8,CST,central standard time
+-,11,8,MIT,massachusetts institute of technology
+-,3,9,ROTTER,bum
+-,10,9,MOMISM,overprotection
+-,0,10,STRAITEN,confine (generic term)
+-,9,10,PAR,equality
+-,13,10,OCA,oka
+-,0,11,ARA,constellation (generic term)
+-,4,11,NIT,luminance unit (generic term)
+-,8,11,STRAINER,filter (generic term)
+-,0,12,FIRSTCROSS,[PUZZLE]
+-,11,12,SKANK,crud
+-,0,13,EPEE,fencing sword (generic term)
+-,5,13,EARED,dog-eared
+-,11,13,SELES,monica seles
+|,0,0,PEWIT,blackcap
+|,0,6,TAB,check
+|,0,10,SAFE,condom
+|,1,0,ALONE,unsocial (similar term)
+|,1,6,RNA,ribonucleic acid
+|,1,10,TRIP,activate
+|,2,0,CIRCADIAN,time unit
+|,2,10,RARE,uncommon (similar term)
+|,3,0,EDD,ded
+|,3,4,SAMSARA,cycle (generic term)
+|,3,12,SE,atomic number 34
+|,4,0,REFILL,fill again
+|,4,7,ANOINT,anele
+|,5,2,ORE,mineral (generic term)
+|,5,6,BRATTICE,partition (generic term)
+|,6,0,OKRA,abelmoschus esculentus
+|,6,5,DOC,commerce
+|,6,9,TETRA,characin (generic term)
+|,7,0,RAY,beam
+|,7,4,SARACEN,nomad (generic term)
+|,7,12,OR,beaver state
+|,8,0,OU,[PUZZLE]
+|,8,3,COMA,comatoseness
+|,8,8,SR,atomic number 38
+|,8,11,SSE,sou'-sou'-east
+|,9,0,NASAL,adenoidal
+|,9,6,TAT,cheapness
+|,9,10,PTSD,posttraumatic stress disorder
+|,10,0,OILPAPER,paper (generic term)
+|,10,9,MAR,blemish
+|,11,2,ARCED,arched
+|,11,8,MORASS,mire
+|,12,0,RANIER,mount ranier
+|,12,7,AIM,purpose
+|,12,11,IKE,dwight d. eisenhower
+|,13,0,UNDO,loosen
+|,13,5,SECTIONAL,area
+|,14,0,NOEL,christmas
+|,14,5,EAR,auricle
+|,14,9,SCENE,aspect
+|,15,0,TARE,bearded darnel
+|,15,5,ATE,Greek deity (generic term)
+|,15,9,MARKS,first baron marks of broughton

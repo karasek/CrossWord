@@ -266,6 +266,21 @@ namespace CrossWord
             }
         }
 
+        public void WritePatternsTo(StreamWriter writer, ICrossDictionary dictionary)
+        {
+            writer.WriteLine("Patterns: ");
+            int cnt = GetPatternCount();
+            for (int i = 0; i < cnt; i++)
+            {
+                var pattern = GetCrossPattern(i);
+                var word = pattern.GetWord();
+                string description;
+                if (!dictionary.TryGetDescription(word, out description))
+                    description = "[PUZZLE]";
+                writer.WriteLine(string.Format("{0},{1}", pattern, description));
+            }
+        }
+
         public void CheckPatternValidity()
         {
             foreach (var p in _horizontalPatterns)

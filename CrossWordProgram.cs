@@ -61,7 +61,7 @@ namespace CrossWord
             }
             try
             {
-                SaveResultToFile(outputFile, resultBoard);
+                SaveResultToFile(outputFile, resultBoard, dictionary);
             }
             catch (Exception e)
             {
@@ -113,6 +113,7 @@ namespace CrossWord
             ICrossBoard successFullBoard = null;
             foreach (var boardWithPuzzle in placer.GetAllPossiblePlacements(dictionary))
             {
+                //boardWithPuzzle.WriteTo(new StreamWriter(Console.OpenStandardOutput(), Console.OutputEncoding) { AutoFlush = true });
                 var gen = new CrossGenerator(dictionary, boardWithPuzzle);
                 var t = Task.Factory.StartNew(() =>
                                           {
@@ -130,13 +131,13 @@ namespace CrossWord
             return successFullBoard;
         }
 
-        static void SaveResultToFile(string outputFile, ICrossBoard resultBoard)
+        static void SaveResultToFile(string outputFile, ICrossBoard resultBoard, ICrossDictionary dictionary)
         {
             Log.Info("Solution has been found:");
             using (var writer = new StreamWriter(new FileStream(outputFile, FileMode.Create)))
             {
                 resultBoard.WriteTo(writer);
-                resultBoard.WritePatternsTo(writer);
+                resultBoard.WritePatternsTo(writer, dictionary);
             }
         }
     }

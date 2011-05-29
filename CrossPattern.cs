@@ -62,6 +62,9 @@ namespace CrossWord
 
         public CrossTransformation TryFillPuzzle(string word, ICrossDictionary dict)
         {
+            for (int i = 0; i < word.Length; i++ )
+                if (_pattern[i] != '.')
+                    return null;
             return TryFill(word, dict, true);
         }
 
@@ -123,6 +126,11 @@ namespace CrossWord
             result._pattern = new char[_pattern.Length];
             Array.Copy(_pattern, result._pattern, _pattern.Length);
             return result;
+        }
+
+        public string GetWord()
+        {
+            return new string(_pattern);
         }
     }
 }

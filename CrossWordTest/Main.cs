@@ -100,7 +100,7 @@ namespace CrossWordTest
                 else if (command.Equals("p"))
                 {
                     using (var w = OpenConsoleWriter())
-                        generator.Board.WritePatternsTo(w);
+                        generator.Board.WritePatternsTo(w, null);
                 }
                 else if (command.Equals("c"))
                 {

@@ -11,6 +11,7 @@ namespace CrossWord
         readonly IList<string>[] _words; //different array list for each word length
         readonly WordIndex[] _indexes;
         readonly int _maxWordLength;
+        readonly Dictionary<string, string> _description;
 
         public Dictionary(int maxWordLength)
         {
@@ -26,6 +27,7 @@ namespace CrossWord
                 _indexes[i] = new WordIndex(i);
             }
             _filter = new WordFilter(1, maxWordLength);
+            _description = new Dictionary<string, string>();
         }
 
         public Dictionary(string aFileName, int maxWordLength)
@@ -38,8 +40,17 @@ namespace CrossWord
                 TextInfo ti = new CultureInfo("en-US", false).TextInfo;
                 while (str != null)
                 {
-                    //Console.WriteLine(str);
-                    AddWord(ti.ToUpper(str));
+                    int pos = str.IndexOf('|');
+                    if (pos==-1)
+                    {
+                        AddWord(ti.ToUpper(str));
+                    }
+                    else
+                    {
+                        var word = ti.ToUpper(str.Substring(0, pos));
+                        AddWord(word);
+                        AddDescription(word, str.Substring(pos+1));
+                    }
                     str = reader.ReadLine();
                 }
             }
@@ -48,6 +59,16 @@ namespace CrossWord
         public int MaxWordLength
         {
             get { return _maxWordLength; }
+        }
+
+        public void AddDescription(string word, string description)
+        {
+            _description[word] = description;
+        }
+
+        public bool TryGetDescription(string word, out string description)
+        {
+            return _description.TryGetValue(word, out description);
         }
 
         public void AddWord(string aWord)
@@ -62,12 +83,12 @@ namespace CrossWord
             return _words[aLength].Count;
         }
 
-        bool IsEmptyPattern(char[] aPattern)
+        static bool IsEmptyPattern(char[] aPattern)
         {
-            if (aPattern==null) return true;
+            if (aPattern == null) return true;
             foreach (var c in aPattern)
             {
-                if (c!='.') return false;
+                if (c != '.') return false;
             }
             return true;
         }
