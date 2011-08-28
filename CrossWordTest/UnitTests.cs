@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using CrossWord;
 using NUnit.Framework;
+
 
 namespace Tests
 {
@@ -71,5 +73,9 @@ namespace Tests
                 Assert.True(board != null);
             }
         }
+    }
+
+    public class TestFixtureAttribute : Attribute
+    {
     }
 }
