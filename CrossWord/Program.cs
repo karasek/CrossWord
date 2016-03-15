@@ -40,7 +40,9 @@ namespace CrossWord
             ICrossBoard resultBoard;
             try
             {
-                resultBoard = GenerateFirstCrossWord(board, dictionary, puzzle);
+                resultBoard = puzzle != null 
+                    ? GenerateFirstCrossWord(board, dictionary, puzzle) 
+                    : GenerateFirstCrossWord(board, dictionary);
             }
             catch (Exception e)
             {
@@ -83,13 +85,19 @@ namespace CrossWord
             puzzle = p;
             dictionary = d;
             if (help || unparsed.Count > 1 || string.IsNullOrEmpty(inputFile) ||
-                string.IsNullOrEmpty(outputFile) || string.IsNullOrEmpty(puzzle) ||
-                string.IsNullOrEmpty(dictionary))
+                string.IsNullOrEmpty(outputFile) || string.IsNullOrEmpty(dictionary))
             {
                 optionSet.WriteOptionDescriptions(Console.Out);
                 return false;
             }
             return true;
+        }
+
+        static ICrossBoard GenerateFirstCrossWord(ICrossBoard board, ICrossDictionary dictionary)
+        {
+            var gen = new CrossGenerator(dictionary, board);
+            board.Preprocess(dictionary);
+            return gen.Generate() ? gen.Board : null;
         }
 
         static ICrossBoard GenerateFirstCrossWord(ICrossBoard board, ICrossDictionary dictionary, string puzzle)
