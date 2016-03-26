@@ -113,42 +113,48 @@ namespace CrossWordTest
             }
         }
 
-        public static void GenerateAndOutput(CrossGenerator generator, CommandStore commands)
+        public static void GenerateAndOutput(CrossGenerator generator, CommandStore commands, int maxSolutionsCount)
         {
-            var found = generator.Generate();
-            lock (commands.Lock)
+            int solutionsCount = 0;
+            foreach (var solution in generator.Generate())
             {
-                Console.WriteLine(found ? "Solution found:" : "Solution not found:");
-                using (var w = OpenConsoleWriter())
-                    generator.Board.WriteTo(w);
+                lock (commands.Lock)
+                {
+                    Console.WriteLine($"Solution {solutionsCount} found:");
+                    using (var w = OpenConsoleWriter())
+                        solution.WriteTo(w);
+                }
+                if (++solutionsCount == maxSolutionsCount)
+                    break;
             }
+            if (solutionsCount == 0)
+                Console.WriteLine("Solution not found:");
         }
 
         public static void Main(string[] args)
         {
+            Console.WriteLine("Starting");
             DateTime startTime = DateTime.Now;
 
             _commandStore = new CommandStore();
             var generators = new List<CrossGenerator>
                 {
-                    CreateGenerator("../../../templates/Template1.txt", "../../../dict/cz", _commandStore),
-                    CreateGenerator("../../../templates/Template2.txt", "../../../dict/words", _commandStore),
-                    CreateGenerator("../../../templates/Template3.txt", "../../../dict/cz", _commandStore),
-                    CreateGenerator("../../../templates/Template4.txt", "../../../dict/cz", _commandStore),
-                    CreateGenerator("../../../templates/american.txt", "../../../dict/words", _commandStore),
-                    CreateGenerator("../../../templates/british.txt", "../../../dict/words", _commandStore),
-                    CreateGenerator("../../../templates/japanese.txt", "../../../dict/cz", _commandStore)
+                    CreateGenerator("../templates/Template1.txt", "../dict/cz", _commandStore),
+                    CreateGenerator("../templates/Template2.txt", "../dict/words", _commandStore),
+                    CreateGenerator("../templates/Template3.txt", "../dict/cz", _commandStore),
+                    CreateGenerator("../templates/Template4.txt", "../dict/cz", _commandStore),
+                    CreateGenerator("../templates/american.txt", "../dict/words", _commandStore),
+                    CreateGenerator("../templates/british.txt", "../dict/words", _commandStore),
+                    CreateGenerator("../templates/japanese.txt", "../dict/cz", _commandStore)
                 };
             //command reader
-
+            const int maxSolutionsCount = 3;
             var ri = new ReadInput(_commandStore);
-
-            ThreadStart readMethod = ri.Run;
-            var readThread = new Thread(readMethod);
-            readThread.Start();
+            Task.Run(() => ri.Run());
 
             var tasks =
-                generators.Select(gen1 => Task.Factory.StartNew(() => GenerateAndOutput(gen1, _commandStore))).ToArray();
+                generators.Select(gen1 => Task.Factory.StartNew(() =>
+                GenerateAndOutput(gen1, _commandStore, maxSolutionsCount))).ToArray();
             Task.WaitAll(tasks);
             ri.ShouldStop = true;
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace CrossWord
@@ -34,7 +33,7 @@ namespace CrossWord
           3. Choosing where to backtrack to when we reach an impasse.
          */
 
-        public bool Generate()
+        public IEnumerable<ICrossBoard> Generate()
         {
             var history = new List<int>();
             var historyTrans = new List<List<CrossTransformation>>();
@@ -71,39 +70,46 @@ namespace CrossWord
                     }
                     else
                     {
-                        //backtrack
-                        while (history.Count > 0)
-                        {
-                            int last = history.Count - 1;
-                            int item = history[last];
-                            succTrans = historyTrans[last];
-                            var trans = succTrans[item];
-                            trans.Undo(trans.Pattern);
-                            usedWords.Remove(trans.Word);
-                            item++;
-                            if (item < succTrans.Count)
-                            {
-                                var nextTrans = succTrans[item];
-                                usedWords.Add(nextTrans.Word);
-                                nextTrans.Transform(nextTrans.Pattern);
-                                history[last] = item;
-                                patt = _board.GetMostConstrainedPattern(_dict);
-                                break;
-                            }
-                            history.RemoveAt(last);
-                            historyTrans.RemoveAt(last);
-                        }
-                        if (history.Count == 0)
-                        {
-                            return false;
-                        }
+                        patt = BackTrack(history, historyTrans, usedWords);
+                        if (patt == null)
+                            yield break;
                     }
                 }
                 else
                 {
-                    return true;
+                    yield return _board.Clone();
+                    patt = BackTrack(history, historyTrans, usedWords);
+                    if (patt == null)
+                        yield break;
                 }
             }
+        }
+
+        CrossPattern BackTrack(List<int> history, List<List<CrossTransformation>> historyTrans, HashSet<string> usedWords)
+        {
+            CrossPattern crossPatternToContinueWith = null;
+            while (history.Count > 0)
+            {
+                int last = history.Count - 1;
+                int item = history[last];
+                var succTrans = historyTrans[last];
+                var trans = succTrans[item];
+                trans.Undo(trans.Pattern);
+                usedWords.Remove(trans.Word);
+                item++;
+                if (item < succTrans.Count)
+                {
+                    var nextTrans = succTrans[item];
+                    usedWords.Add(nextTrans.Word);
+                    nextTrans.Transform(nextTrans.Pattern);
+                    history[last] = item;
+                    crossPatternToContinueWith = _board.GetMostConstrainedPattern(_dict);
+                    break;
+                }
+                history.RemoveAt(last);
+                historyTrans.RemoveAt(last);
+            }
+            return crossPatternToContinueWith;
         }
     }
 }

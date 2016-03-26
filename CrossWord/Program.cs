@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -97,7 +98,7 @@ namespace CrossWord
         {
             var gen = new CrossGenerator(dictionary, board);
             board.Preprocess(dictionary);
-            return gen.Generate() ? gen.Board : null;
+            return gen.Generate().FirstOrDefault();
         }
 
         static ICrossBoard GenerateFirstCrossWord(ICrossBoard board, ICrossDictionary dictionary, string puzzle)
@@ -112,11 +113,12 @@ namespace CrossWord
                 var gen = new CrossGenerator(dictionary, boardWithPuzzle);
                 var t = Task.Factory.StartNew(() =>
                                           {
-                                              if (gen.Generate())
+                                              foreach (var solution in gen.Generate())
                                               {
-                                                  successFullBoard = gen.Board;
+                                                  successFullBoard = solution;
                                                   cts.Cancel();
                                                   mre.Set();
+                                                  break; //interested in the first one
                                               }
                                           }, cts.Token);
                 if (cts.IsCancellationRequested)
