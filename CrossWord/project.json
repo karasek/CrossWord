@@ -1,32 +1,22 @@
 ﻿{
   "version": "1.0.0-*",
-  "description": "CrossWordCore Console Application",
+  "description": "CrossWord Console Application",
   "authors": [ "karasek" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
-
+  "buildOptions": {
+    "debugType": "portable",
+    "emitEntryPoint": true
+  },
   "dependencies": {
   },
-
-  "commands": {
-    "CrossWordCore": "CrossWordCore"
-  },
-
-  "frameworks": {
-    "dnxcore50": {
+ "frameworks": {
+    "netcoreapp1.0": {
       "dependencies": {
-        "Microsoft.CSharp": "4.0.0-beta-23019",
-        "System.Collections": "4.0.11-beta-23225",
-        "System.Console": "4.0.0-beta-23225",
-        "System.IO": "4.0.11-beta-23225",
-        "System.IO.FileSystem": "4.0.1-beta-23225",
-        "System.Linq": "4.0.1-beta-23225",
-        "System.Threading": "4.0.11-beta-23225",
-        "System.Text.RegularExpressions": "4.0.11-beta-23225",
-        "System.Runtime": "4.0.21-beta-23225",
-        "System.Reflection": "4.1.0-beta-23225"
-      }
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.1"
+        }
+      },
+      "imports": "dnxcore50"
     }
   }
 }

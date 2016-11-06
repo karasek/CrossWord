@@ -1,31 +1,29 @@
 {
   "version": "1.0.0-*",
-  "description": "",
-  "authors": [ "" ],
-  "tags": [ "" ],
-  "projectUrl": "",
-  "licenseUrl": "",
-
+  "buildOptions": {
+    "debugType": "portable"
+  },
   "dependencies": {
-    "xunit": "2.2.0-beta1-build3239",
-    "CrossWord": ""
+    "System.Runtime.Serialization.Primitives": "4.1.1",
+    "xunit": "2.1.0",
+    "dotnet-test-xunit": "1.0.0-rc2-*",
+    "CrossWord": {
+      "target": "project"
+    }
   },
-  "compilationOptions": {
-    "emitEntryPoint": true
-  },
-  "commands": {
-    "test": "xunit.runner.dnx",
-    "run": "Program"
-  },
-
+  "testRunner": "xunit",
   "frameworks": {
-    "dnxcore50": {
+    "netcoreapp1.0": {
       "dependencies": {
-        "Microsoft.CSharp": "4.0.0-beta-23019",
-        "System.Collections": "4.0.11-beta-23225",
-        "System.Linq": "4.0.1-beta-23225",
-        "System.Threading": "4.0.11-beta-23225"
-      }
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.1"
+        }
+      },
+      "imports": [
+        "dotnet5.4",
+        "portable-net451+win8"
+      ]
     }
   }
 }
