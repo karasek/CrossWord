@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using CrossWord;
 using Xunit;
 
 
-namespace Tests
+namespace CrossWord.Test
 {
     public class CrossTest
     {
@@ -72,9 +71,5 @@ namespace Tests
                 Assert.True(board != null);
             }
         }
-    }
-
-    public class TestFixtureAttribute : Attribute
-    {
     }
 }
