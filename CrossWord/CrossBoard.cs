@@ -140,7 +140,7 @@ namespace CrossWord
             int patternCount = GetPatternCount();
             for (int i = 0; i < patternCount; i++)
             {
-                CrossPattern pattern = GetCrossPattern(i);
+                var pattern = GetCrossPattern(i);
                 if (pattern.Pattern == null)
                 {
                     //empty
@@ -199,15 +199,20 @@ namespace CrossWord
         public CrossPattern GetMostConstrainedPattern(ICrossDictionary aDict)
         {
             var min = (int)Constants.Unbounded;
-            int cnt = GetPatternCount();
             CrossPattern result = null;
-            for (int i = 0; i < cnt; i++)
+            foreach (var p in _horizontalPatterns)
             {
-                if (GetCrossPattern(i).InstantiationCount < min)
-                {
-                    result = GetCrossPattern(i);
-                    min = result.InstantiationCount;
-                }
+                if (p.InstantiationCount >= min)
+                    continue;
+                result = p;
+                min = p.InstantiationCount;
+            }
+            foreach (var p in _verticalPatterns)
+            {
+                if (p.InstantiationCount >= min)
+                    continue;
+                result = p;
+                min = p.InstantiationCount;
             }
             return result;
         }
