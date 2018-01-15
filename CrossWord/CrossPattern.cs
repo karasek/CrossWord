@@ -60,22 +60,22 @@ namespace CrossWord
 
         public CrossPattern[] AdjacentPatterns { get; private set; }
 
-        public CrossTransformation TryFillPuzzle(string word, ICrossDictionary dict)
+        public CrossTransformation TryFillPuzzle(Span<char> word, ICrossDictionary dict)
         {
             for (int i = 0; i < word.Length; i++ )
                 if (_pattern[i] != '.')
                     return null;
-            return TryFill(word, dict, true);
+            return TryFill(null, word, dict, true);
         }
 
-        public CrossTransformation TryFill(string word, ICrossDictionary dict)
+        public CrossTransformation TryFill(string dictWord, Span<char> word, ICrossDictionary dict)
         {
-            return TryFill(word, dict, false);
+            return TryFill(dictWord, word, dict, false);
         }
 
-        CrossTransformation TryFill(string word, ICrossDictionary dict, bool puzzle)
+        CrossTransformation TryFill(string dictWord, Span<char> word, ICrossDictionary dict, bool puzzle)
         {
-            var trans = new CrossTransformation(word);
+            var trans = new CrossTransformation(dictWord);
             int instSum = 0;
             for (int i = 0; i < word.Length; i++)
             {

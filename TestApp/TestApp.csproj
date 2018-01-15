@@ -10,12 +10,14 @@
     <AssemblyName>CrossWord.TestApp</AssemblyName>
     <PackageId>Test</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.4;portable-net451+win8</PackageTargetFallback>
-    <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
     <ApplicationIcon />
     <OutputTypeEx>exe</OutputTypeEx>
     <StartupObject />
   </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="netstandard" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CrossWord\CrossWord.csproj" />

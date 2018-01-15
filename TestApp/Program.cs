@@ -54,7 +54,7 @@ namespace CrossWord.TestApp
             cb.Preprocess(dict);
 
             CrossPattern cp = cb.GetCrossPattern(32);
-            CrossTransformation trans = cp.TryFill("ADELAVOJTAHELA", dict); //length 14
+            CrossTransformation trans = cp.TryFill(null, "ADELAVOJTAHELA".ToCharArray(), dict); //length 14
             trans.Transform(cp);
         }
 
@@ -139,11 +139,11 @@ namespace CrossWord.TestApp
                 {
                     CreateGenerator("../templates/Template1.txt", "../dict/cz", _commandStore),
                     CreateGenerator("../templates/Template2.txt", "../dict/words", _commandStore),
-                    CreateGenerator("../templates/Template3.txt", "../dict/cz", _commandStore),
+                    CreateGenerator("../templates/Template3.txt", "../dict/words", _commandStore),
                     CreateGenerator("../templates/Template4.txt", "../dict/cz", _commandStore),
                     CreateGenerator("../templates/american.txt", "../dict/words", _commandStore),
                     CreateGenerator("../templates/british.txt", "../dict/words", _commandStore),
-                    CreateGenerator("../templates/japanese.txt", "../dict/cz", _commandStore)
+                    CreateGenerator("../templates/japanese.txt", "../dict/words", _commandStore)
                 };
             //command reader
             const int maxSolutionsCount = 3;

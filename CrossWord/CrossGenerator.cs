@@ -51,7 +51,7 @@ namespace CrossWord
                     foreach (string t in matchingWords)
                     {
                         if (usedWords.Contains(t)) continue;
-                        CrossTransformation trans = patt.TryFill(t, _dict);
+                        CrossTransformation trans = patt.TryFill(t, t.ToCharArray(), _dict);
                         if (trans != null)
                         {
                             succTrans.Add(trans);
