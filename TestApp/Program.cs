@@ -54,7 +54,7 @@ namespace CrossWord.TestApp
             cb.Preprocess(dict);
 
             CrossPattern cp = cb.GetCrossPattern(32);
-            CrossTransformation trans = cp.TryFill(null, "ADELAVOJTAHELA".ToCharArray(), dict); //length 14
+            CrossTransformation trans = cp.TryFill(null, "ADELAVOJTAHELA".AsSpan(), dict); //length 14
             trans.Transform(cp);
         }
 

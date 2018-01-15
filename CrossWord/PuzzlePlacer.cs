@@ -17,8 +17,8 @@ namespace CrossWord
 
         public IEnumerable<ICrossBoard> GetAllPossiblePlacements(ICrossDictionary dictionary)
         {
-            var puzzle = NormalizePuzzle(_puzzle).ToCharArray().AsSpan();
-            var board = (ICrossBoard)_board.Clone();
+            var puzzle = NormalizePuzzle(_puzzle).AsSpan();
+            var board = _board.Clone();
             board.Preprocess(dictionary);
             var patterns = new List<CrossPattern>();
             for (int i = 0; i < board.GetPatternCount(); i++)

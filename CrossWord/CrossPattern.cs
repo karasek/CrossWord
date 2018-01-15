@@ -60,7 +60,7 @@ namespace CrossWord
 
         public CrossPattern[] AdjacentPatterns { get; private set; }
 
-        public CrossTransformation TryFillPuzzle(Span<char> word, ICrossDictionary dict)
+        public CrossTransformation TryFillPuzzle(ReadOnlySpan<char> word, ICrossDictionary dict)
         {
             for (int i = 0; i < word.Length; i++ )
                 if (_pattern[i] != '.')
@@ -68,12 +68,12 @@ namespace CrossWord
             return TryFill(null, word, dict, true);
         }
 
-        public CrossTransformation TryFill(string dictWord, Span<char> word, ICrossDictionary dict)
+        public CrossTransformation TryFill(string dictWord, ReadOnlySpan<char> word, ICrossDictionary dict)
         {
             return TryFill(dictWord, word, dict, false);
         }
 
-        CrossTransformation TryFill(string dictWord, Span<char> word, ICrossDictionary dict, bool puzzle)
+        CrossTransformation TryFill(string dictWord, ReadOnlySpan<char> word, ICrossDictionary dict, bool puzzle)
         {
             var trans = new CrossTransformation(dictWord);
             int instSum = 0;
