@@ -137,10 +137,10 @@ namespace CrossWord.TestApp
             _commandStore = new CommandStore();
             var generators = new List<CrossGenerator>
                 {
-                    CreateGenerator("../templates/Template1.txt", "../dict/cz", _commandStore),
-                    CreateGenerator("../templates/Template2.txt", "../dict/words", _commandStore),
-                    CreateGenerator("../templates/Template3.txt", "../dict/words", _commandStore),
-                    CreateGenerator("../templates/Template4.txt", "../dict/cz", _commandStore),
+                    CreateGenerator("../templates/template1.txt", "../dict/cz", _commandStore),
+                    CreateGenerator("../templates/template2.txt", "../dict/words", _commandStore),
+                    CreateGenerator("../templates/template3.txt", "../dict/words", _commandStore),
+                    CreateGenerator("../templates/template4.txt", "../dict/cz", _commandStore),
                     CreateGenerator("../templates/american.txt", "../dict/words", _commandStore),
                     CreateGenerator("../templates/british.txt", "../dict/words", _commandStore),
                     CreateGenerator("../templates/japanese.txt", "../dict/words", _commandStore)
