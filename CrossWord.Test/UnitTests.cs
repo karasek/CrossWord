@@ -31,6 +31,7 @@ namespace CrossWord.Test
                     cb.AddStartWord(sw);
                 }
             }
+
             cb.Preprocess(new Dictionary(cb.MaxWordLength));
             Assert.Equal(8, cb.GetPatternCount());
         }
@@ -49,7 +50,7 @@ namespace CrossWord.Test
 
             var al = new List<string>();
             dict.GetMatch("s...".ToCharArray(), al);
-            Assert.Equal(1, al.Count);
+            Assert.Single(al);
             Assert.Equal("suty", al[0]);
         }
 

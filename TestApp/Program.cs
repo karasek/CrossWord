@@ -19,10 +19,12 @@ namespace CrossWord.TestApp
             {
                 cb.AddStartWord(0, i);
             }
+
             for (int i = 1; i < sizex; i++)
             {
                 cb.AddStartWord(i, 0);
             }
+
             cb.AddStartWord(7, 1);
             cb.AddStartWord(4, 3);
             cb.AddStartWord(3, 4);
@@ -71,7 +73,7 @@ namespace CrossWord.TestApp
 
         static StreamWriter OpenConsoleWriter()
         {
-            var w = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true };
+            var w = new StreamWriter(Console.OpenStandardOutput()) {AutoFlush = true};
             return w;
         }
 
@@ -122,9 +124,11 @@ namespace CrossWord.TestApp
                     using (var w = OpenConsoleWriter())
                         solution.WriteTo(w);
                 }
+
                 if (++solutionsCount == maxSolutionsCount)
                     break;
             }
+
             if (solutionsCount == 0)
                 Console.WriteLine("Solution not found:");
         }
@@ -136,15 +140,15 @@ namespace CrossWord.TestApp
 
             _commandStore = new CommandStore();
             var generators = new List<CrossGenerator>
-                {
-                    CreateGenerator("../templates/template1.txt", "../dict/cz", _commandStore),
-                    CreateGenerator("../templates/template2.txt", "../dict/words", _commandStore),
-                    CreateGenerator("../templates/template3.txt", "../dict/words", _commandStore),
-                    CreateGenerator("../templates/template4.txt", "../dict/cz", _commandStore),
-                    CreateGenerator("../templates/american.txt", "../dict/words", _commandStore),
-                    CreateGenerator("../templates/british.txt", "../dict/words", _commandStore),
-                    CreateGenerator("../templates/japanese.txt", "../dict/words", _commandStore)
-                };
+            {
+                CreateGenerator("../templates/template1.txt", "../dict/cz", _commandStore),
+                CreateGenerator("../templates/template2.txt", "../dict/words", _commandStore),
+                CreateGenerator("../templates/template3.txt", "../dict/words", _commandStore),
+                CreateGenerator("../templates/template4.txt", "../dict/cz", _commandStore),
+                CreateGenerator("../templates/american.txt", "../dict/words", _commandStore),
+                CreateGenerator("../templates/british.txt", "../dict/words", _commandStore),
+                CreateGenerator("../templates/japanese.txt", "../dict/words", _commandStore)
+            };
             //command reader
             const int maxSolutionsCount = 3;
             var ri = new ReadInput(_commandStore);
@@ -152,7 +156,7 @@ namespace CrossWord.TestApp
 
             var tasks =
                 generators.Select(gen1 => Task.Factory.StartNew(() =>
-                GenerateAndOutput(gen1, _commandStore, maxSolutionsCount))).ToArray();
+                    GenerateAndOutput(gen1, _commandStore, maxSolutionsCount))).ToArray();
             Task.WaitAll(tasks);
             ri.ShouldStop = true;
 

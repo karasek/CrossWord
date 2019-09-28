@@ -17,7 +17,7 @@ namespace CrossWord
 
         public IEnumerable<ICrossBoard> GetAllPossiblePlacements(ICrossDictionary dictionary)
         {
-            var puzzle = NormalizePuzzle(_puzzle).AsSpan();
+            var puzzle = NormalizePuzzle(_puzzle).AsMemory();
             var board = _board.Clone();
             board.Preprocess(dictionary);
             var patterns = new List<CrossPattern>();
@@ -33,32 +33,34 @@ namespace CrossWord
             int idx = 0;
             while (true)
             {
-            continueOuterLoop:
+                continueOuterLoop:
                 for (; idx < patterns.Count; idx++)
                 {
-                    var patt = patterns[idx];
-                    if (restPuzzleLength < patt.Length) continue;
-                    if (restPuzzleLength - patt.Length == 1) continue;
-                    var trans = patt.TryFillPuzzle(puzzle.Slice(puzzle.Length - restPuzzleLength,
-                                                   patt.Length), dictionary);
+                    var pattern = patterns[idx];
+                    if (restPuzzleLength < pattern.Length) continue;
+                    if (restPuzzleLength - pattern.Length == 1) continue;
+                    var trans = pattern.TryFillPuzzle(puzzle.Slice(puzzle.Length - restPuzzleLength,
+                        pattern.Length).Span, dictionary);
                     if (trans != null)
                     {
-                        trans.Transform(patt);
-                        if (restPuzzleLength == patt.Length)
+                        trans.Transform(pattern);
+                        if (restPuzzleLength == pattern.Length)
                         {
-                            var cloned = (ICrossBoard)board.Clone();
-                            trans.Undo(patt);
+                            var cloned = board.Clone();
+                            trans.Undo(pattern);
                             yield return cloned;
                             continue;
                         }
+
                         stack.Add(idx + 1);
-                        trans.Pattern = patt;
+                        trans.Pattern = pattern;
                         appliedTransformations.Add(trans);
-                        restPuzzleLength -= patt.Length;
+                        restPuzzleLength -= pattern.Length;
                         idx = 0;
                         goto continueOuterLoop;
                     }
                 }
+
                 if (stack.Count == 0)
                     break;
                 idx = stack.Back();
@@ -68,7 +70,6 @@ namespace CrossWord
                 appTr.Undo(appTr.Pattern);
                 restPuzzleLength += appTr.Pattern.Length;
             }
-            yield break;
         }
 
         static string NormalizePuzzle(string puzzle)
@@ -79,6 +80,7 @@ namespace CrossWord
                 if (Char.IsLetter(c))
                     builder.Append(Char.ToUpper(c));
             }
+
             return builder.ToString();
         }
     }
