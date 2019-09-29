@@ -10,6 +10,6 @@ namespace CrossWord
         void GetMatch(char[] pattern, List<string> matched);
         int MaxWordLength { get; }
         void AddDescription(string word, string description);
-        bool TryGetDescription(string word, out string description);
+        bool TryGetDescription(string word, out string? description);
     }
 }

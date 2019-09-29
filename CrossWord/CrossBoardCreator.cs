@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CrossWord
 {
-    static public class CrossBoardCreator
+    public static class CrossBoardCreator
     {
         public static ICrossBoard CreateFromFile(string path)
         {
@@ -25,26 +25,28 @@ namespace CrossWord
                 if (string.IsNullOrEmpty(line)) break;
                 lines.Add(line);
             }
+
             int lineLength = -1;
             for (int i = 0; i < lines.Count; i++)
             {
                 if (lineLength == -1)
                     lineLength = lines[i].Length;
                 else if (lines[i].Length != lineLength)
-                    throw new Exception(string.Format("Line {0} has different length ({1}) then previous lines ({2})",
-                        i, lines[i], lineLength));
+                    throw new Exception(
+                        $"Line {i} has different length ({lines[i]}) then previous lines ({lineLength})");
             }
-            var board = new CrossBoard();
-            board.SetBoardSize(lineLength, lines.Count);
+
+            ICrossBoard board = new CrossBoard(lineLength, lines.Count);
             for (int row = 0; row < lines.Count; row++)
             {
                 var line = lines[row];
                 for (int col = 0; col < lineLength; col++)
                 {
-                    if (line[col]=='-')
+                    if (line[col] == '-')
                         board.AddStartWord(col, row);
                 }
             }
+
             return board;
         }
     }

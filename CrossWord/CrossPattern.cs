@@ -1,79 +1,64 @@
 using System;
+using System.Linq;
 
 namespace CrossWord
 {
     public class CrossPattern
     {
-        int _instantiationCount;
-        bool _isHorizontal;
-        int _length;
-        char[] _pattern;
-
+        readonly bool _isHorizontal;
+        readonly int _length;
         readonly int _startX;
         readonly int _startY;
+
+        int _instantiationCount;
+        char[] _pattern;
 
         public CrossPattern(int startX, int startY, int length, bool isHorizontal)
         {
             _startX = startX;
             _startY = startY;
-            Length = length;
+            _length = length;
+            AdjacentPatterns = new CrossPattern[_length];
             _isHorizontal = isHorizontal;
+            _pattern = Enumerable.Repeat('.', length).ToArray();
         }
 
-        public bool IsHorizontal
-        {
-            get { return _isHorizontal; }
-            set { _isHorizontal = value; }
-        }
+        public static CrossPattern Empty { get; } = new CrossPattern(0, 0, 0, false);
 
-        public int StartX
-        {
-            get { return _startX; }
-        }
+        public int StartX => _startX;
 
-        public int StartY
-        {
-            get { return _startY; }
-        }
+        public int StartY => _startY;
 
-        public int Length
-        {
-            get { return _length; }
-            private set
-            {
-                _length = value;
-                AdjacentPatterns = new CrossPattern[_length];
-            }
-        }
+        public int Length => _length;
 
         public char[] Pattern
         {
-            get { return _pattern; }
-            set { _pattern = value; }
+            get => _pattern;
+            set => _pattern = value;
         }
 
         public int InstantiationCount
         {
-            get { return _instantiationCount; }
-            set { _instantiationCount = value; }
+            get => _instantiationCount;
+            set => _instantiationCount = value;
         }
 
         public CrossPattern[] AdjacentPatterns { get; private set; }
 
-        public CrossTransformation TryFillPuzzle(ReadOnlySpan<char> word, ICrossDictionary dict)
+        public CrossTransformation? TryFillPuzzle(ReadOnlySpan<char> word, ICrossDictionary dict)
         {
-            for (int i = 0; i < word.Length; i++ )
+            for (int i = 0; i < word.Length; i++)
                 if (_pattern[i] != '.')
                     return null;
-            return TryFill(null, word, dict, true);
+            return TryFill("", word, dict, true);
         }
 
-        public CrossTransformation TryFill(string dictWord, ReadOnlySpan<char> word, ICrossDictionary dict)
+        public CrossTransformation? TryFill(string dictWord, ReadOnlySpan<char> word, ICrossDictionary dict)
         {
             return TryFill(dictWord, word, dict, false);
         }
 
-        CrossTransformation TryFill(string dictWord, ReadOnlySpan<char> word, ICrossDictionary dict, bool puzzle)
+        CrossTransformation? TryFill(string dictWord, ReadOnlySpan<char> word, ICrossDictionary dict, bool puzzle)
         {
             var trans = new CrossTransformation(dictWord);
             int instSum = 0;
@@ -106,17 +91,19 @@ namespace CrossWord
                             return null;
                         }
                     }
+
                     trans.AddChange(-1, i, word[i]);
                 }
             }
-            trans.AddChangeInst(-1, _instantiationCount, (int)Constants.Unbounded);
+
+            trans.AddChangeInst(-1, _instantiationCount, (int) Constants.Unbounded);
             trans.SumInst = instSum;
             return trans;
         }
 
         public override string ToString()
         {
-            return (_isHorizontal ? "-" : "|") + string.Format(",{0},{1},", _startX, _startY) + new string(_pattern);
+            return (_isHorizontal ? "-" : "|") + $",{_startX},{_startY}," + new string(_pattern);
         }
 
         public object Clone()

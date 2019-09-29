@@ -10,11 +10,11 @@ namespace CrossWord.TestApp
     {
         static CommandStore _commandStore;
 
-        static void CreateCross(ICrossBoard cb)
+        static ICrossBoard CreateCross()
         {
             const int sizex = 11;
             const int sizey = 15;
-            cb.SetBoardSize(sizex, sizey);
+            ICrossBoard cb = new CrossBoard(sizex, sizey);
             for (int i = 0; i < sizey; i++)
             {
                 cb.AddStartWord(0, i);
@@ -45,19 +45,8 @@ namespace CrossWord.TestApp
             cb.AddStartWord(6, 13);
             cb.AddStartWord(6, 14);
             cb.AddStartWord(10, 14);
-        }
 
-        static void oldTest()
-        {
-            //prepare cross board
-            ICrossBoard cb = new CrossBoard();
-            CreateCross(cb);
-            var dict = new Dictionary("../../../dict/cz", cb.MaxWordLength);
-            cb.Preprocess(dict);
-
-            CrossPattern cp = cb.GetCrossPattern(32);
-            CrossTransformation trans = cp.TryFill(null, "ADELAVOJTAHELA".AsSpan(), dict); //length 14
-            trans.Transform(cp);
+            return cb;
         }
 
         static CrossGenerator CreateGenerator(string file, string dictFile, CommandStore commands)

@@ -30,10 +30,10 @@ namespace CrossWord
             public SkipListEnumerator(SkipList skipList)
             {
                 _list = skipList._list;
-                _step = (int)Math.Sqrt(_list.Count);
+                _step = (int) Math.Sqrt(_list.Count);
                 if (_step < 2) _step = 2;
                 _count = _list.Count;
-                _maxValue = _list[_list.Count - 1];
+                _maxValue = _list[^1];
             }
 
             public bool MoveNext()
@@ -44,6 +44,7 @@ namespace CrossWord
                     _index++;
                     return true;
                 }
+
                 return false;
             }
 
@@ -59,8 +60,10 @@ namespace CrossWord
                         _current = _list[_index];
                         return true;
                     }
+
                     _index++;
                 }
+
                 return false;
             }
 

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using Xunit;
 
-
 namespace CrossWord.Test
 {
     public class CrossTest
@@ -10,8 +9,7 @@ namespace CrossWord.Test
         [Fact]
         public void CrossBoardPreprocessTest()
         {
-            ICrossBoard cb = new CrossBoard();
-            cb.SetBoardSize(5, 5);
+            ICrossBoard cb = new CrossBoard(5, 5);
             for (int i = 0; i < 5; i++)
             {
                 var sw = new StartWord();

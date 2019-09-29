@@ -29,9 +29,14 @@ namespace CrossWord
     public interface ICrossBoard
     {
         //initialization phase
-        void SetBoardSize(int aX, int aY);
         void AddStartWord(StartWord aStartWord);
-        void AddStartWord(int aX, int aY);
+        
+        void AddStartWord(int aX, int aY)
+        {
+            var sw = new StartWord { StartX = aX, StartY = aY };
+            AddStartWord(sw);
+        }
+        
         void Preprocess(ICrossDictionary aDict);
 
         int MaxWordLength { get; }
@@ -40,7 +45,7 @@ namespace CrossWord
         int GetPatternCount();
         CrossPattern GetCrossPattern(int aIndex);
 
-        CrossPattern GetMostConstrainedPattern(ICrossDictionary aDict);
+        CrossPattern? GetMostConstrainedPattern(ICrossDictionary aDict);
 
         //get pattern at given position
         CrossPattern GetCrossPattern(int aStartX, int aStartY, Orientation aOrientation);

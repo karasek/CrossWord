@@ -23,13 +23,17 @@ namespace CrossWord
             _changes = new List<int>();
             _instChanges = new List<int>();
             _word = word;
+            Pattern = CrossPattern.Empty;
         }
 
         public int SumInst { get; set; }
 
         public CrossPattern Pattern { get; set; }
 
-        public string Word { get { return _word; } }
+        public string Word
+        {
+            get { return _word; }
+        }
 
         public void Transform(CrossPattern aCrossPattern)
         {
@@ -37,7 +41,7 @@ namespace CrossWord
             {
                 var adjIdx = _changes[i];
                 var pos = _changes[i + 1];
-                var newChar = (char)_changes[i + 2];
+                var newChar = (char) _changes[i + 2];
                 char[] pattern;
                 if (adjIdx == -1)
                     pattern = aCrossPattern.Pattern;
@@ -45,6 +49,7 @@ namespace CrossWord
                     pattern = aCrossPattern.AdjacentPatterns[adjIdx].Pattern;
                 pattern[pos] = newChar;
             }
+
             for (int i = 0; i < _instChanges.Count; i += 3)
             {
                 var adjIdx = _instChanges[i];
@@ -58,6 +63,7 @@ namespace CrossWord
                     aCrossPattern.InstantiationCount = newInst;
                 }
             }
+
             //Console.WriteLine("Transform: {0}", new String(aCrossPattern.Pattern));
         }
 
@@ -75,6 +81,7 @@ namespace CrossWord
                     pattern = aCrossPattern.AdjacentPatterns[adjIdx].Pattern;
                 pattern[pos] = '.';
             }
+
             for (int i = 0; i < _instChanges.Count; i += 3)
             {
                 var adjIdx = _instChanges[i];

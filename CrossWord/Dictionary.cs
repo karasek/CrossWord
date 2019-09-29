@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -7,7 +8,7 @@ namespace CrossWord
     public class Dictionary : object, ICrossDictionary
     {
         readonly WordFilter _filter;
-        readonly IList<string>[] _words; //different array list for each word length
+        readonly List<string>[] _words; //different array list for each word length
         readonly WordIndex[] _indexes;
         readonly int _maxWordLength;
         readonly Dictionary<string, string> _description;
@@ -20,11 +21,13 @@ namespace CrossWord
             {
                 _words[i] = new List<string>();
             }
+
             _indexes = new WordIndex[maxWordLength + 1];
             for (int i = 1; i <= maxWordLength; i++)
             {
                 _indexes[i] = new WordIndex(i);
             }
+
             _filter = new WordFilter(1, maxWordLength);
             _description = new Dictionary<string, string>();
         }
@@ -35,12 +38,12 @@ namespace CrossWord
             //read streams
             using (StreamReader reader = File.OpenText(aFileName))
             {
-                string str = reader.ReadLine();
-                TextInfo ti = new CultureInfo("en-US").TextInfo;
+                var str = reader.ReadLine();
+                var ti = new CultureInfo("en-US").TextInfo;
                 while (str != null)
                 {
                     int pos = str.IndexOf('|');
-                    if (pos==-1)
+                    if (pos == -1)
                     {
                         AddWord(ti.ToUpper(str));
                     }
@@ -48,8 +51,9 @@ namespace CrossWord
                     {
                         var word = ti.ToUpper(str.Substring(0, pos));
                         AddWord(word);
-                        AddDescription(word, str.Substring(pos+1));
+                        AddDescription(word, str.Substring(pos + 1));
                     }
+
                     str = reader.ReadLine();
                 }
             }
@@ -65,7 +69,7 @@ namespace CrossWord
             _description[word] = description;
         }
 
-        public bool TryGetDescription(string word, out string description)
+        public bool TryGetDescription(string word, out string? description)
         {
             return _description.TryGetValue(word, out description);
         }
@@ -89,6 +93,7 @@ namespace CrossWord
             {
                 if (c != '.') return false;
             }
+
             return true;
         }
 
@@ -107,6 +112,7 @@ namespace CrossWord
                 matched.AddRange(_words[aPattern.Length]);
                 return;
             }
+
             var indexes = _indexes[aPattern.Length].GetMatchingIndexes(aPattern);
             if (indexes == null) return;
             foreach (var idx in indexes)

@@ -25,8 +25,7 @@ namespace CrossWord
             for (int i = 0; i < word.Length; i++)
             {
                 var dict = _index[i];
-                SkipList list;
-                if (dict.TryGetValue(word[i], out list))
+                if (dict.TryGetValue(word[i], out var list))
                 {
                     list.Add(index);
                 }
@@ -39,18 +38,18 @@ namespace CrossWord
             }
         }
 
-        public ICollection<int> GetMatchingIndexes(char[] pattern)
+        public ICollection<int>? GetMatchingIndexes(char[] pattern)
         {
             IList<SkipList> toMerge = new List<SkipList>();
             for (int i = 0; i < pattern.Length; i++)
             {
                 char c = pattern[i];
                 if (c == '.') continue;
-                SkipList list;
-                if (!_index[i].TryGetValue(c, out list))
+                if (!_index[i].TryGetValue(c, out var list))
                     return null;
                 toMerge.Add(list);
             }
+
             if (toMerge.Count == 0) return null;
             return Merge(toMerge);
         }
@@ -65,23 +64,26 @@ namespace CrossWord
                 var en = list.GetSkipEnumerator();
                 enumerators.Add(en);
             }
+
             var result = new List<int>();
             int max = -1;
             while (true)
             {
-            again:
+                again:
                 foreach (var enumerator in enumerators)
                 {
-                    if (! enumerator.MoveNextGreaterOrEqual(max))
+                    if (!enumerator.MoveNextGreaterOrEqual(max))
                     {
                         return result;
                     }
+
                     if (enumerator.Current > max)
                     {
                         max = enumerator.Current;
                         goto again;
                     }
                 }
+
                 result.Add(max);
                 if (enumerators[0].MoveNext())
                     max = enumerators[0].Current;
