@@ -83,7 +83,7 @@ namespace CrossWord
                             if (newInstCount == 0)
                                 return null;
                             instSum += newInstCount;
-                            trans.AddChangeInst(i, AdjacentPatterns[i].InstantiationCount, newInstCount);
+                            trans.AddChangeInstantiation(i, AdjacentPatterns[i].InstantiationCount, newInstCount);
                             trans.AddChange(i, adjIndex, word[i]);
                         }
                         else if (puzzle || c != word[i])
@@ -96,7 +96,7 @@ namespace CrossWord
                 }
             }
 
-            trans.AddChangeInst(-1, _instantiationCount, (int) Constants.Unbounded);
+            trans.AddChangeInstantiation(-1, _instantiationCount, (int) Constants.Unbounded);
             trans.SumInst = instSum;
             return trans;
         }

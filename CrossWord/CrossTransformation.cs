@@ -6,9 +6,9 @@ namespace CrossWord
     //constrain so much
     public class CrossTransformationComparer : IComparer<CrossTransformation>
     {
-        int IComparer<CrossTransformation>.Compare(CrossTransformation t1, CrossTransformation t2)
+        int IComparer<CrossTransformation>.Compare(CrossTransformation? t1, CrossTransformation? t2)
         {
-            return t2.SumInst.CompareTo(t1.SumInst);
+            return t2!.SumInst.CompareTo(t1!.SumInst);
         }
     }
 
@@ -16,13 +16,12 @@ namespace CrossWord
     {
         readonly IList<int> _changes;
         readonly IList<int> _instChanges;
-        readonly string _word;
 
         public CrossTransformation(string word)
         {
             _changes = new List<int>();
             _instChanges = new List<int>();
-            _word = word;
+            Word = word;
             Pattern = CrossPattern.Empty;
         }
 
@@ -30,10 +29,7 @@ namespace CrossWord
 
         public CrossPattern Pattern { get; set; }
 
-        public string Word
-        {
-            get { return _word; }
-        }
+        public string Word { get; }
 
         public void Transform(CrossPattern aCrossPattern)
         {
@@ -94,18 +90,18 @@ namespace CrossWord
         }
 
         //create
-        public void AddChange(int aAdjancedIdx, int aPosition, char aNewChar)
+        public void AddChange(int adjancedIndex, int position, char newChar)
         {
-            _changes.Add(aAdjancedIdx);
-            _changes.Add(aPosition);
-            _changes.Add(aNewChar);
+            _changes.Add(adjancedIndex);
+            _changes.Add(position);
+            _changes.Add(newChar);
         }
 
-        public void AddChangeInst(int aAdjancedIdx, int aInst, int aNewInst)
+        public void AddChangeInstantiation(int adjancedIndex, int instantiation, int newInstantiation)
         {
-            _instChanges.Add(aAdjancedIdx);
-            _instChanges.Add(aInst);
-            _instChanges.Add(aNewInst);
+            _instChanges.Add(adjancedIndex);
+            _instChanges.Add(instantiation);
+            _instChanges.Add(newInstantiation);
         }
     }
 }
