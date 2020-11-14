@@ -21,8 +21,9 @@ namespace CrossWord.TestApp
         {
             while (! _shouldStop)
             {
-                String command = Console.ReadLine();
-                _commandStore.AddCommand(command);
+                var command = Console.ReadLine();
+                if (command != null)
+                    _commandStore.AddCommand(command);
             }
         }
     }

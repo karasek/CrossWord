@@ -10,45 +10,6 @@ namespace CrossWord.TestApp
     {
         static CommandStore _commandStore;
 
-        static ICrossBoard CreateCross()
-        {
-            const int sizex = 11;
-            const int sizey = 15;
-            ICrossBoard cb = new CrossBoard(sizex, sizey);
-            for (int i = 0; i < sizey; i++)
-            {
-                cb.AddStartWord(0, i);
-            }
-
-            for (int i = 1; i < sizex; i++)
-            {
-                cb.AddStartWord(i, 0);
-            }
-
-            cb.AddStartWord(7, 1);
-            cb.AddStartWord(4, 3);
-            cb.AddStartWord(3, 4);
-            cb.AddStartWord(6, 4);
-            cb.AddStartWord(7, 5);
-            cb.AddStartWord(4, 6);
-            cb.AddStartWord(1, 7);
-            cb.AddStartWord(5, 7);
-            cb.AddStartWord(9, 7);
-            cb.AddStartWord(10, 7);
-            cb.AddStartWord(8, 8);
-            cb.AddStartWord(3, 9);
-            cb.AddStartWord(6, 9);
-            cb.AddStartWord(4, 10);
-            cb.AddStartWord(7, 10);
-            cb.AddStartWord(8, 11);
-            cb.AddStartWord(5, 12);
-            cb.AddStartWord(6, 13);
-            cb.AddStartWord(6, 14);
-            cb.AddStartWord(10, 14);
-
-            return cb;
-        }
-
         static CrossGenerator CreateGenerator(string file, string dictFile, CommandStore commands)
         {
             DateTime startTime = DateTime.Now;
@@ -70,7 +31,7 @@ namespace CrossWord.TestApp
         {
             while (_commandStore.Count > 0)
             {
-                string command = _commandStore.PopCommand();
+                var command = _commandStore.PopCommand();
                 if (command == null) break;
                 if (command.Equals("h"))
                 {
@@ -115,7 +76,10 @@ namespace CrossWord.TestApp
                 }
 
                 if (++solutionsCount == maxSolutionsCount)
+                {
+                    Console.WriteLine($"{solutionsCount} solutions found.");
                     break;
+                }
             }
 
             if (solutionsCount == 0)
@@ -139,7 +103,7 @@ namespace CrossWord.TestApp
                 CreateGenerator("../templates/japanese.txt", "../dict/words", _commandStore)
             };
             //command reader
-            const int maxSolutionsCount = 3;
+            const int maxSolutionsCount = 100;
             var ri = new ReadInput(_commandStore);
             Task.Run(() => ri.Run());
 

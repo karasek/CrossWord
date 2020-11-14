@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace CrossWord
@@ -6,10 +7,8 @@ namespace CrossWord
     {
         void AddWord(string word);
         int GetWordOfLengthCount(int length);
-        int GetMatchCount(char[] pattern);
-        void GetMatch(char[] pattern, List<string> matched);
-        int MaxWordLength { get; }
-        void AddDescription(string word, string description);
+        int GetMatchCount(ReadOnlySpan<char> pattern);
+        void GetMatch(ReadOnlySpan<char> pattern, List<string> matched);
         bool TryGetDescription(string word, out string? description);
     }
 }

@@ -40,7 +40,7 @@ namespace CrossWord
                 return 3;
             }
 
-            ICrossBoard resultBoard;
+            ICrossBoard? resultBoard;
             try
             {
                 resultBoard = puzzle != null
@@ -101,7 +101,7 @@ namespace CrossWord
             return true;
         }
 
-        static ICrossBoard GenerateFirstCrossWord(ICrossBoard board, ICrossDictionary dictionary)
+        static ICrossBoard? GenerateFirstCrossWord(ICrossBoard board, ICrossDictionary dictionary)
         {
             var gen = new CrossGenerator(dictionary, board);
             board.Preprocess(dictionary);

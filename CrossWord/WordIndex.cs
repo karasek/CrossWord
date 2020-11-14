@@ -38,29 +38,105 @@ namespace CrossWord
             }
         }
 
-        public ICollection<int>? GetMatchingIndexes(char[] pattern)
+        struct SkipListId
         {
-            IList<SkipList> toMerge = new List<SkipList>();
-            for (int i = 0; i < pattern.Length; i++)
+            public SkipListId(int index, char c)
             {
-                char c = pattern[i];
-                if (c == '.') continue;
-                if (!_index[i].TryGetValue(c, out var list))
-                    return null;
-                toMerge.Add(list);
+                Index = index;
+                Char = c;
             }
 
-            if (toMerge.Count == 0) return null;
-            return Merge(toMerge);
+            public int Index;
+            public char Char;
         }
 
-        static ICollection<int> Merge(IList<SkipList> lists)
+        public int GetMatchingIndexCount(ReadOnlySpan<char> pattern)
         {
-            if (lists.Count == 1)
-                return lists[0].All();
-            var enumerators = new List<SkipList.SkipListEnumerator>();
-            foreach (var list in lists)
+            unsafe
             {
+                var toMerge = stackalloc SkipListId[pattern.Length];
+                var toMergeCount = 0;
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    char c = pattern[i];
+                    if (c == '.') continue;
+                    if (!_index[i].ContainsKey(c))
+                        return 0;
+                    toMerge[toMergeCount++] = new SkipListId(i, c);
+                }
+
+                return MergedCount(toMerge, toMergeCount);
+            }
+        }
+
+        unsafe int MergedCount(SkipListId* toMerge, in int toMergeCount)
+        {
+            if (toMergeCount == 1)
+                return _index[toMerge->Index][toMerge->Char].Count;
+            var enumerators = new List<SkipList.SkipListEnumerator>();
+            for (int i = 0; i < toMergeCount; i++)
+            {
+                var list = _index[toMerge[i].Index][toMerge[i].Char];
+                var en = list.GetSkipEnumerator();
+                enumerators.Add(en);
+            }
+
+            var result = 0;
+            int max = -1;
+            while (true)
+            {
+                again:
+                foreach (var enumerator in enumerators)
+                {
+                    if (!enumerator.MoveNextGreaterOrEqual(max))
+                    {
+                        return result;
+                    }
+
+                    if (enumerator.Current > max)
+                    {
+                        max = enumerator.Current;
+                        goto again;
+                    }
+                }
+
+                result++;
+                if (enumerators[0].MoveNext())
+                    max = enumerators[0].Current;
+                else
+                    return result;
+            }
+        }
+
+
+        public ICollection<int>? AddMatched(ReadOnlySpan<char> pattern)
+        {
+            unsafe
+            {
+                var toMerge = stackalloc SkipListId[pattern.Length];
+                var toMergeCount = 0;
+                for (int i = 0; i < pattern.Length; i++)
+                {
+                    char c = pattern[i];
+                    if (c == '.') continue;
+                    if (!_index[i].TryGetValue(c, out var list))
+                        return null;
+                    toMerge[toMergeCount++] = new SkipListId(i, c);
+                }
+
+                if (toMergeCount == 0) return null;
+                return Merge(toMerge, toMergeCount);
+            }
+        }
+
+        unsafe ICollection<int> Merge(SkipListId* toMerge, in int toMergeCount)
+        {
+            if (toMergeCount == 1)
+                return _index[toMerge->Index][toMerge->Char].All();
+            var enumerators = new List<SkipList.SkipListEnumerator>();
+            for (int i = 0; i < toMergeCount; i++)
+            {
+                var list = _index[toMerge[i].Index][toMerge[i].Char];
                 var en = list.GetSkipEnumerator();
                 enumerators.Add(en);
             }

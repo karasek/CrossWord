@@ -6,7 +6,6 @@ namespace CrossWord.TestApp
     {
         readonly IList<string> _commandQueue;
         readonly object _lockObject = new object();
-        readonly object _outLockObject = new object();
         int _count;
 
         public CommandStore()
@@ -15,10 +14,7 @@ namespace CrossWord.TestApp
             _count = 0;
         }
 
-        public int Count
-        {
-            get { return _count; }
-        }
+        public int Count => _count;
 
         public void AddCommand(string aCommand)
         {
@@ -29,9 +25,9 @@ namespace CrossWord.TestApp
             }
         }
 
-        public string PopCommand()
+        public string? PopCommand()
         {
-            string result = null;
+            string? result = null;
             lock (_lockObject)
             {
                 if (_commandQueue.Count > 0)
@@ -44,9 +40,6 @@ namespace CrossWord.TestApp
             return result;
         }
 
-        public object Lock
-        {
-            get { return _outLockObject; }
-        }
+        public object Lock => _lockObject;
     }
 }

@@ -36,32 +36,25 @@ namespace CrossWord
             : this(maxWordLength)
         {
             //read streams
-            using (StreamReader reader = File.OpenText(aFileName))
+            using var reader = File.OpenText(aFileName);
+            var str = reader.ReadLine();
+            var ti = new CultureInfo("en-US").TextInfo;
+            while (str != null)
             {
-                var str = reader.ReadLine();
-                var ti = new CultureInfo("en-US").TextInfo;
-                while (str != null)
+                int pos = str.IndexOf('|');
+                if (pos == -1)
                 {
-                    int pos = str.IndexOf('|');
-                    if (pos == -1)
-                    {
-                        AddWord(ti.ToUpper(str));
-                    }
-                    else
-                    {
-                        var word = ti.ToUpper(str.Substring(0, pos));
-                        AddWord(word);
-                        AddDescription(word, str.Substring(pos + 1));
-                    }
-
-                    str = reader.ReadLine();
+                    AddWord(ti.ToUpper(str));
                 }
-            }
-        }
+                else
+                {
+                    var word = str.Substring(0, pos);
+                    AddWord(word);
+                    AddDescription(word, str.Substring(pos + 1));
+                }
 
-        public int MaxWordLength
-        {
-            get { return _maxWordLength; }
+                str = reader.ReadLine();
+            }
         }
 
         public void AddDescription(string word, string description)
@@ -86,38 +79,34 @@ namespace CrossWord
             return _words[aLength].Count;
         }
 
-        static bool IsEmptyPattern(char[] aPattern)
+        static bool IsEmptyPattern(ReadOnlySpan<char> pattern)
         {
-            if (aPattern == null) return true;
-            foreach (var c in aPattern)
-            {
-                if (c != '.') return false;
-            }
-
+            for (var i = 0; i < pattern.Length; i++)
+                if (pattern[i] != '.')
+                    return false;
             return true;
         }
 
-        public int GetMatchCount(char[] aPattern)
+        public int GetMatchCount(ReadOnlySpan<char> pattern)
         {
-            if (IsEmptyPattern(aPattern))
-                return _words[aPattern.Length].Count;
-            var indexes = _indexes[aPattern.Length].GetMatchingIndexes(aPattern);
-            return indexes != null ? indexes.Count : 0;
+            if (IsEmptyPattern(pattern))
+                return _words[pattern.Length].Count;
+            return _indexes[pattern.Length].GetMatchingIndexCount(pattern);
         }
 
-        public void GetMatch(char[] aPattern, List<string> matched)
+        public void GetMatch(ReadOnlySpan<char> pattern, List<string> matched)
         {
-            if (IsEmptyPattern(aPattern))
+            if (IsEmptyPattern(pattern))
             {
-                matched.AddRange(_words[aPattern.Length]);
+                matched.AddRange(_words[pattern.Length]);
                 return;
             }
 
-            var indexes = _indexes[aPattern.Length].GetMatchingIndexes(aPattern);
+            var indexes = _indexes[pattern.Length].AddMatched(pattern);
             if (indexes == null) return;
             foreach (var idx in indexes)
             {
-                matched.Add(_words[aPattern.Length][idx]);
+                matched.Add(_words[pattern.Length][idx]);
             }
         }
     }

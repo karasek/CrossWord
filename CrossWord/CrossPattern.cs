@@ -43,7 +43,7 @@ namespace CrossWord
             set => _instantiationCount = value;
         }
 
-        public CrossPattern[] AdjacentPatterns { get; private set; }
+        public CrossPattern[] AdjacentPatterns { get; }
 
         public CrossTransformation? TryFillPuzzle(ReadOnlySpan<char> word, ICrossDictionary dict)
         {

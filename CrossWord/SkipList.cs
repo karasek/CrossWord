@@ -1,46 +1,55 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CrossWord
 {
-    public class SkipList : IEnumerable<int>
+    public class SkipList
     {
         readonly IList<int> _list;
+        int[]? _array;
 
         public SkipList()
         {
             _list = new List<int>();
         }
 
+        public int Count => _list.Count;
+
         public void Add(int val)
         {
             _list.Add(val);
+            _array = null;
         }
 
-        public class SkipListEnumerator : IEnumerator<int>
+        int[] GetSkipped()
         {
-            readonly IList<int> _list;
+            return _array ??= _list.ToArray();
+        }
+
+        public class SkipListEnumerator
+        {
+            readonly int[] _values;
             readonly int _step;
             readonly int _count;
-            readonly int _maxValue;
             int _index;
             int _current;
 
             public SkipListEnumerator(SkipList skipList)
             {
-                _list = skipList._list;
-                _step = (int) Math.Sqrt(_list.Count);
+                _values = skipList.GetSkipped();
+                _step = (int) Math.Sqrt(_values.Length);
                 if (_step < 2) _step = 2;
-                _count = _list.Count;
-                _maxValue = _list[^1];
+                _count = _values.Length;
+                _index = 0;
+                _current = _values[0];
             }
 
             public bool MoveNext()
             {
-                if (_index < _list.Count)
+                if (_index < _values.Length)
                 {
-                    _current = _list[_index];
+                    _current = _values[_index];
                     _index++;
                     return true;
                 }
@@ -50,14 +59,19 @@ namespace CrossWord
 
             public bool MoveNextGreaterOrEqual(int value)
             {
-                if (value > _maxValue || _index >= _count) return false;
-                while (_index + _step < _count && _list[_index + _step] <= value)
-                    _index += _step;
+                var pos = _index + _step;
+                while (pos < _count && _values[pos] <= value)
+                {
+                    _index = pos;
+                    pos += _step;
+                }
+
                 while (_index < _count)
                 {
-                    if (_list[_index] >= value)
+                    var val = _values[_index];
+                    if (val >= value)
                     {
-                        _current = _list[_index];
+                        _current = val;
                         return true;
                     }
 
@@ -70,32 +84,11 @@ namespace CrossWord
             public void Reset()
             {
                 _index = 0;
-                _current = default(int);
+                _current = default;
             }
 
-            public int Current
-            {
-                get { return _current; }
-            }
+            public int Current => _current;
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
-
-            public void Dispose()
-            {
-            }
-        }
-
-        public IEnumerator<int> GetEnumerator()
-        {
-            return GetSkipEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         public SkipListEnumerator GetSkipEnumerator()
