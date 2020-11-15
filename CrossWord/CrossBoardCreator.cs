@@ -9,10 +9,8 @@ namespace CrossWord
     {
         public static ICrossBoard CreateFromFile(string path)
         {
-            using (var fs = File.OpenRead(path))
-            {
-                return CreateFromStream(fs);
-            }
+            using var fs = File.OpenRead(path);
+            return CreateFromStream(fs);
         }
 
         public static ICrossBoard CreateFromStream(Stream s)

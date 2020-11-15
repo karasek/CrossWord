@@ -139,11 +139,9 @@ namespace CrossWord
         static void SaveResultToFile(string outputFile, ICrossBoard resultBoard, ICrossDictionary dictionary)
         {
             Console.WriteLine("Solution has been found:");
-            using (var writer = new StreamWriter(new FileStream(outputFile, FileMode.Create)))
-            {
-                resultBoard.WriteTo(writer);
-                resultBoard.WritePatternsTo(writer, dictionary);
-            }
+            using var writer = new StreamWriter(new FileStream(outputFile, FileMode.Create));
+            resultBoard.WriteTo(writer);
+            resultBoard.WritePatternsTo(writer, dictionary);
         }
     }
 }

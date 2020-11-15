@@ -10,12 +10,10 @@ namespace CrossWord
         readonly WordFilter _filter;
         readonly List<string>[] _words; //different array list for each word length
         readonly WordIndex[] _indexes;
-        readonly int _maxWordLength;
         readonly Dictionary<string, string> _description;
 
         public Dictionary(int maxWordLength)
         {
-            _maxWordLength = maxWordLength;
             _words = new List<string>[maxWordLength + 1];
             for (int i = 1; i <= maxWordLength; i++)
             {

@@ -14,7 +14,7 @@ namespace CrossWord.TestApp
 
         public bool ShouldStop
         {
-            set { _shouldStop = value; }
+            set => _shouldStop = value;
         }
 
         public void Run()

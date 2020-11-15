@@ -28,8 +28,8 @@ namespace CrossWord
                 yield break;
 
             var restPuzzleLength = puzzle.Length;
-            var stack = new List<int>();
-            var appliedTransformations = new List<CrossTransformation>();
+            var stack = new Stack<int>();
+            var appliedTransformations = new Stack<CrossTransformation>();
             int idx = 0;
             while (true)
             {
@@ -52,9 +52,9 @@ namespace CrossWord
                             continue;
                         }
 
-                        stack.Add(idx + 1);
+                        stack.Push(idx + 1);
                         trans.Pattern = pattern;
-                        appliedTransformations.Add(trans);
+                        appliedTransformations.Push(trans);
                         restPuzzleLength -= pattern.Length;
                         idx = 0;
                         goto continueOuterLoop;
@@ -63,10 +63,8 @@ namespace CrossWord
 
                 if (stack.Count == 0)
                     break;
-                idx = stack.Back();
-                stack.Pop();
-                var appTr = appliedTransformations.Back();
-                appliedTransformations.Pop();
+                idx = stack.Pop();
+                var appTr = appliedTransformations.Pop();
                 appTr.Undo(appTr.Pattern);
                 restPuzzleLength += appTr.Pattern.Length;
             }
@@ -77,8 +75,8 @@ namespace CrossWord
             var builder = new StringBuilder(puzzle.Length);
             foreach (var c in puzzle)
             {
-                if (Char.IsLetter(c))
-                    builder.Append(Char.ToUpper(c));
+                if (char.IsLetter(c))
+                    builder.Append(char.ToUpper(c));
             }
 
             return builder.ToString();

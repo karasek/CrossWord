@@ -15,15 +15,8 @@ namespace CrossWord
 
     public struct StartWord
     {
-        string[] _label; //one for each Orientation
         public int StartX { get; set; }
-
         public int StartY { get; set; }
-
-        public string[] Label
-        {
-            get { return _label ?? (_label = new string[2]); }
-        }
     }
 
     public interface ICrossBoard

@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace CrossWord.TestApp
 {
-    static class Program
+    class Program
     {
-        static CommandStore _commandStore;
+        readonly CommandStore _commandStore;
+        
+        public Program()
+        {
+            _commandStore = new CommandStore();
+        }
 
-        static CrossGenerator CreateGenerator(string file, string dictFile, CommandStore commands)
+        CrossGenerator CreateGenerator(string file, string dictFile, CommandStore commands)
         {
             DateTime startTime = DateTime.Now;
             var cb = CrossBoardCreator.CreateFromFile(file);
@@ -21,13 +26,13 @@ namespace CrossWord.TestApp
             return gen;
         }
 
-        static StreamWriter OpenConsoleWriter()
+        StreamWriter OpenConsoleWriter()
         {
             var w = new StreamWriter(Console.OpenStandardOutput()) {AutoFlush = true};
             return w;
         }
 
-        static void GeneratorWatcher(CrossGenerator generator)
+        void GeneratorWatcher(CrossGenerator generator)
         {
             while (_commandStore.Count > 0)
             {
@@ -63,7 +68,7 @@ namespace CrossWord.TestApp
             }
         }
 
-        public static void GenerateAndOutput(CrossGenerator generator, CommandStore commands, int maxSolutionsCount)
+        void GenerateAndOutput(CrossGenerator generator, CommandStore commands, int maxSolutionsCount)
         {
             int solutionsCount = 0;
             foreach (var solution in generator.Generate())
@@ -86,12 +91,11 @@ namespace CrossWord.TestApp
                 Console.WriteLine("Solution not found:");
         }
 
-        public static void Main(string[] args)
+        void Run()
         {
             Console.WriteLine("Starting");
             DateTime startTime = DateTime.Now;
 
-            _commandStore = new CommandStore();
             var generators = new List<CrossGenerator>
             {
                 CreateGenerator("../templates/template1.txt", "../dict/cz", _commandStore),
@@ -115,6 +119,12 @@ namespace CrossWord.TestApp
 
             TimeSpan timeSpan = DateTime.Now - startTime;
             Console.WriteLine("Time elapsed: {0}", timeSpan);
+        }
+        
+        
+        public static void Main(string[] args)
+        {
+            new Program().Run();
         }
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace CrossWord
 {
@@ -158,10 +157,7 @@ namespace CrossWord
             }
         }
 
-        public int MaxWordLength
-        {
-            get { return Math.Max(_sizeX, _sizeY); }
-        }
+        public int MaxWordLength => Math.Max(_sizeX, _sizeY);
 
         public int GetPatternCount()
         {
@@ -303,22 +299,19 @@ namespace CrossWord
         {
             var result = new CrossBoard(_sizeX, _sizeY);
             result._startWords.AddRange(_startWords);
-            if (_horizontalPatterns != null && _verticalPatterns != null)
+            result._horizontalPatterns = new List<CrossPattern>();
+            foreach (var patt in _horizontalPatterns)
             {
-                result._horizontalPatterns = new List<CrossPattern>();
-                foreach (var patt in _horizontalPatterns)
-                {
-                    result._horizontalPatterns.Add((CrossPattern) patt.Clone());
-                }
-
-                result._verticalPatterns = new List<CrossPattern>();
-                foreach (var patt in _verticalPatterns)
-                {
-                    result._verticalPatterns.Add((CrossPattern) patt.Clone());
-                }
-
-                result.BindAdjacentPatterns();
+                result._horizontalPatterns.Add((CrossPattern) patt.Clone());
             }
+
+            result._verticalPatterns = new List<CrossPattern>();
+            foreach (var patt in _verticalPatterns)
+            {
+                result._verticalPatterns.Add((CrossPattern) patt.Clone());
+            }
+
+            result.BindAdjacentPatterns();
 
             return result;
         }
