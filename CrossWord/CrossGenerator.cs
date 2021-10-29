@@ -1,118 +1,117 @@
 using System;
 using System.Collections.Generic;
 
-namespace CrossWord
+namespace CrossWord;
+
+public class CrossGenerator
 {
-    public class CrossGenerator
+    readonly ICrossBoard _board;
+    readonly ICrossDictionary _dict;
+
+    public delegate void ProgressWatcher(CrossGenerator generator);
+
+    public event ProgressWatcher? Watcher;
+
+
+    public CrossGenerator(ICrossDictionary aDict, ICrossBoard aBoard)
     {
-        readonly ICrossBoard _board;
-        readonly ICrossDictionary _dict;
+        _dict = aDict;
+        _board = aBoard;
+    }
 
-        public delegate void ProgressWatcher(CrossGenerator generator);
+    void DoCommands()
+    {
+        Watcher?.Invoke(this);
+    }
 
-        public event ProgressWatcher? Watcher;
+    public ICrossBoard Board => _board;
 
+    /*
+      1. Choosing which pattern to fill (i.e. which variable to solve for).
+      2. Picking a suitable word (i.e. which value to select).
+      3. Choosing where to backtrack to when we reach an impasse.
+     */
 
-        public CrossGenerator(ICrossDictionary aDict, ICrossBoard aBoard)
+    public IEnumerable<ICrossBoard> Generate()
+    {
+        var history = new List<int>();
+        var historyTrans = new List<List<CrossTransformation>>();
+        var matchingWords = new List<string>();
+        var usedWords = new HashSet<string>();
+        var pattern = _board.GetMostConstrainedPattern(_dict);
+        while (true)
         {
-            _dict = aDict;
-            _board = aBoard;
-        }
-
-        void DoCommands()
-        {
-            Watcher?.Invoke(this);
-        }
-
-        public ICrossBoard Board => _board;
-
-        /*
-          1. Choosing which pattern to fill (i.e. which variable to solve for).
-          2. Picking a suitable word (i.e. which value to select).
-          3. Choosing where to backtrack to when we reach an impasse.
-         */
-
-        public IEnumerable<ICrossBoard> Generate()
-        {
-            var history = new List<int>();
-            var historyTrans = new List<List<CrossTransformation>>();
-            var matchingWords = new List<string>();
-            var usedWords = new HashSet<string>();
-            var pattern = _board.GetMostConstrainedPattern(_dict);
-            while (true)
+            DoCommands();
+            if (pattern != null)
             {
-                DoCommands();
-                if (pattern != null)
+                matchingWords.Clear();
+                _dict.GetMatch(pattern.Pattern, matchingWords);
+                var succTrans = new List<CrossTransformation>();
+                foreach (string t in matchingWords)
                 {
-                    matchingWords.Clear();
-                    _dict.GetMatch(pattern.Pattern, matchingWords);
-                    var succTrans = new List<CrossTransformation>();
-                    foreach (string t in matchingWords)
+                    if (usedWords.Contains(t)) continue;
+                    var trans = pattern.TryFill(t, t.AsSpan(), _dict);
+                    if (trans != null)
                     {
-                        if (usedWords.Contains(t)) continue;
-                        var trans = pattern.TryFill(t, t.AsSpan(), _dict);
-                        if (trans != null)
-                        {
-                            succTrans.Add(trans);
-                            trans.Pattern = pattern;
-                        }
+                        succTrans.Add(trans);
+                        trans.Pattern = pattern;
                     }
+                }
 
-                    if (succTrans.Count > 0)
-                    {
-                        succTrans.Sort(new CrossTransformationComparer());
-                        var trans = succTrans[0];
-                        usedWords.Add(trans.Word);
-                        trans.Transform(pattern);
-                        historyTrans.Add(succTrans);
-                        history.Add(0);
-                        pattern = _board.GetMostConstrainedPattern(_dict);
-                    }
-                    else
-                    {
-                        pattern = BackTrack(history, historyTrans, usedWords);
-                        if (pattern == null)
-                            yield break;
-                    }
+                if (succTrans.Count > 0)
+                {
+                    succTrans.Sort(new CrossTransformationComparer());
+                    var trans = succTrans[0];
+                    usedWords.Add(trans.Word);
+                    trans.Transform(pattern);
+                    historyTrans.Add(succTrans);
+                    history.Add(0);
+                    pattern = _board.GetMostConstrainedPattern(_dict);
                 }
                 else
                 {
-                    yield return _board.Clone();
                     pattern = BackTrack(history, historyTrans, usedWords);
                     if (pattern == null)
                         yield break;
                 }
             }
-        }
-
-        CrossPattern? BackTrack(List<int> history, List<List<CrossTransformation>> historyTrans,
-            HashSet<string> usedWords)
-        {
-            CrossPattern? crossPatternToContinueWith = null;
-            while (history.Count > 0)
+            else
             {
-                int last = history.Count - 1;
-                int item = history[last];
-                var succTrans = historyTrans[last];
-                var trans = succTrans[item];
-                trans.Undo(trans.Pattern);
-                usedWords.Remove(trans.Word);
-                item++;
-                if (item < succTrans.Count)
-                {
-                    var nextTrans = succTrans[item];
-                    usedWords.Add(nextTrans.Word);
-                    nextTrans.Transform(nextTrans.Pattern);
-                    history[last] = item;
-                    crossPatternToContinueWith = _board.GetMostConstrainedPattern(_dict);
-                    break;
-                }
+                yield return _board.Clone();
+                pattern = BackTrack(history, historyTrans, usedWords);
+                if (pattern == null)
+                    yield break;
+            }
+        }
+    }
 
-                history.RemoveAt(last);
-                historyTrans.RemoveAt(last);
+    CrossPattern? BackTrack(List<int> history, List<List<CrossTransformation>> historyTrans,
+        HashSet<string> usedWords)
+    {
+        CrossPattern? crossPatternToContinueWith = null;
+        while (history.Count > 0)
+        {
+            int last = history.Count - 1;
+            int item = history[last];
+            var succTrans = historyTrans[last];
+            var trans = succTrans[item];
+            trans.Undo(trans.Pattern);
+            usedWords.Remove(trans.Word);
+            item++;
+            if (item < succTrans.Count)
+            {
+                var nextTrans = succTrans[item];
+                usedWords.Add(nextTrans.Word);
+                nextTrans.Transform(nextTrans.Pattern);
+                history[last] = item;
+                crossPatternToContinueWith = _board.GetMostConstrainedPattern(_dict);
+                break;
             }
 
-            return crossPatternToContinueWith;
+            history.RemoveAt(last);
+            historyTrans.RemoveAt(last);
         }
+
+        return crossPatternToContinueWith;
     }
 }

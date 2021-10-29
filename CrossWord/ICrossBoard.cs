@@ -1,53 +1,49 @@
 using System.IO;
 
-namespace CrossWord
+namespace CrossWord;
+
+public enum Constants
 {
-    public enum Constants
+    Unbounded = 999999999,
+}
+
+public enum Orientation : byte
+{
+    Horizontal = 0,
+    Vertical = 1,
+}
+
+public struct StartWord
+{
+    public int StartX { get; set; }
+    public int StartY { get; set; }
+}
+
+public interface ICrossBoard
+{
+    //initialization phase
+    void AddStartWord(StartWord aStartWord);
+
+    void AddStartWord(int aX, int aY)
     {
-        Unbounded = 999999999,
+        var sw = new StartWord { StartX = aX, StartY = aY };
+        AddStartWord(sw);
     }
 
-    public enum Orientation : byte
-    {
-        Horizontal = 0,
-        Vertical = 1,
-    }
+    void Preprocess(ICrossDictionary aDict);
 
-    public struct StartWord
-    {
-        public int StartX { get; set; }
-        public int StartY { get; set; }
-    }
+    int MaxWordLength { get; }
 
-    public interface ICrossBoard
-    {
-        //initialization phase
-        void AddStartWord(StartWord aStartWord);
-        
-        void AddStartWord(int aX, int aY)
-        {
-            var sw = new StartWord { StartX = aX, StartY = aY };
-            AddStartWord(sw);
-        }
-        
-        void Preprocess(ICrossDictionary aDict);
+    //enumerate patterns
+    int GetPatternCount();
+    CrossPattern GetCrossPattern(int aIndex);
 
-        int MaxWordLength { get; }
+    CrossPattern? GetMostConstrainedPattern(ICrossDictionary aDict);
 
-        //enumerate patterns
-        int GetPatternCount();
-        CrossPattern GetCrossPattern(int aIndex);
+    void WriteTo(StreamWriter writer);
+    void WritePatternsTo(StreamWriter writer);
+    void WritePatternsTo(StreamWriter writer, ICrossDictionary dictionary);
+    void CheckPatternValidity();
 
-        CrossPattern? GetMostConstrainedPattern(ICrossDictionary aDict);
-
-        //get pattern at given position
-        CrossPattern GetCrossPattern(int aStartX, int aStartY, Orientation aOrientation);
-
-        void WriteTo(StreamWriter writer);
-        void WritePatternsTo(StreamWriter writer);
-        void WritePatternsTo(StreamWriter writer, ICrossDictionary dictionary);
-        void CheckPatternValidity();
-
-        ICrossBoard Clone();
-    }
+    ICrossBoard Clone();
 }

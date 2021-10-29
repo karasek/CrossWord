@@ -1,30 +1,29 @@
 using System;
 
-namespace CrossWord.TestApp
+namespace CrossWord.TestApp;
+
+public class ReadInput
 {
-    public class ReadInput
+    readonly CommandStore _commandStore;
+    bool _shouldStop;
+
+    public ReadInput(CommandStore aCommandStore)
     {
-        readonly CommandStore _commandStore;
-        bool _shouldStop;
+        _commandStore = aCommandStore;
+    }
 
-        public ReadInput(CommandStore aCommandStore)
-        {
-            _commandStore = aCommandStore;
-        }
+    public bool ShouldStop
+    {
+        set => _shouldStop = value;
+    }
 
-        public bool ShouldStop
+    public void Run()
+    {
+        while (!_shouldStop)
         {
-            set => _shouldStop = value;
-        }
-
-        public void Run()
-        {
-            while (! _shouldStop)
-            {
-                var command = Console.ReadLine();
-                if (command != null)
-                    _commandStore.AddCommand(command);
-            }
+            var command = Console.ReadLine();
+            if (command != null)
+                _commandStore.AddCommand(command);
         }
     }
 }

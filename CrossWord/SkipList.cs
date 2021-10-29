@@ -2,104 +2,102 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CrossWord
+namespace CrossWord;
+
+public class SkipList
 {
-    public class SkipList
+    readonly IList<int> _list;
+    int[]? _array;
+
+    public SkipList()
     {
-        readonly IList<int> _list;
-        int[]? _array;
+        _list = new List<int>();
+    }
 
-        public SkipList()
+    public int Count => _list.Count;
+
+    public void Add(int val)
+    {
+        _list.Add(val);
+        _array = null;
+    }
+
+    int[] GetSkipped()
+    {
+        return _array ??= _list.ToArray();
+    }
+
+    public class SkipListEnumerator
+    {
+        readonly int[] _values;
+        readonly int _step;
+        readonly int _count;
+        int _index;
+        int _current;
+
+        public SkipListEnumerator(SkipList skipList)
         {
-            _list = new List<int>();
+            _values = skipList.GetSkipped();
+            _step = (int)Math.Sqrt(_values.Length);
+            if (_step < 2) _step = 2;
+            _count = _values.Length;
+            _index = 0;
+            _current = _values[0];
         }
 
-        public int Count => _list.Count;
-
-        public void Add(int val)
+        public bool MoveNext()
         {
-            _list.Add(val);
-            _array = null;
-        }
-
-        int[] GetSkipped()
-        {
-            return _array ??= _list.ToArray();
-        }
-
-        public class SkipListEnumerator
-        {
-            readonly int[] _values;
-            readonly int _step;
-            readonly int _count;
-            int _index;
-            int _current;
-
-            public SkipListEnumerator(SkipList skipList)
+            if (_index < _values.Length)
             {
-                _values = skipList.GetSkipped();
-                _step = (int) Math.Sqrt(_values.Length);
-                if (_step < 2) _step = 2;
-                _count = _values.Length;
-                _index = 0;
-                _current = _values[0];
+                _current = _values[_index];
+                _index++;
+                return true;
             }
 
-            public bool MoveNext()
+            return false;
+        }
+
+        public bool MoveNextGreaterOrEqual(int value)
+        {
+            var pos = _index + _step;
+            while (pos < _count && _values[pos] <= value)
             {
-                if (_index < _values.Length)
+                _index = pos;
+                pos += _step;
+            }
+
+            while (_index < _count)
+            {
+                var val = _values[_index];
+                if (val >= value)
                 {
-                    _current = _values[_index];
-                    _index++;
+                    _current = val;
                     return true;
                 }
 
-                return false;
+                _index++;
             }
 
-            public bool MoveNextGreaterOrEqual(int value)
-            {
-                var pos = _index + _step;
-                while (pos < _count && _values[pos] <= value)
-                {
-                    _index = pos;
-                    pos += _step;
-                }
-
-                while (_index < _count)
-                {
-                    var val = _values[_index];
-                    if (val >= value)
-                    {
-                        _current = val;
-                        return true;
-                    }
-
-                    _index++;
-                }
-
-                return false;
-            }
-
-            public void Reset()
-            {
-                _index = 0;
-                _current = default;
-            }
-
-            public int Current => _current;
-
+            return false;
         }
 
-        public SkipListEnumerator GetSkipEnumerator()
+        public void Reset()
         {
-            return new SkipListEnumerator(this);
+            _index = 0;
+            _current = default;
         }
 
-        public ICollection<int> All()
-        {
-            return _list;
-        }
+        public int Current => _current;
+
     }
 
+    public SkipListEnumerator GetSkipEnumerator()
+    {
+        return new SkipListEnumerator(this);
+    }
+
+    public ICollection<int> All()
+    {
+        return _list;
+    }
 }
