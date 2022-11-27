@@ -15,10 +15,10 @@ class Program
         _commandStore = new CommandStore();
     }
 
-    CrossGenerator CreateGenerator(string file, string dictFile, CommandStore commands)
+    async Task<CrossGenerator> CreateGeneratorAsync(string file, string dictFile, CommandStore commands)
     {
         DateTime startTime = DateTime.Now;
-        var cb = CrossBoardCreator.CreateFromFile(file);
+        var cb = await CrossBoardCreator.CreateFromFileAsync(file);
         var dict = new Dictionary(dictFile, cb.MaxWordLength);
         cb.Preprocess(dict);
         var gen = new CrossGenerator(dict, cb);
@@ -73,12 +73,12 @@ class Program
         int solutionsCount = 0;
         foreach (var solution in generator.Generate())
         {
-            lock (commands.Lock)
-            {
-                Console.WriteLine($"Solution {solutionsCount} found:");
-                using (var w = OpenConsoleWriter())
-                    solution.WriteTo(w);
-            }
+            // lock (commands.Lock)
+            // {
+            //     Console.WriteLine($"Solution {solutionsCount} found:");
+            //     using (var w = OpenConsoleWriter())
+            //         solution.WriteTo(w);
+            // }
 
             if (++solutionsCount == maxSolutionsCount)
             {
@@ -91,25 +91,25 @@ class Program
             Console.WriteLine("Solution not found:");
     }
 
-    void Run()
+    async Task RunAsync()
     {
         Console.WriteLine("Starting");
         DateTime startTime = DateTime.Now;
 
         var generators = new List<CrossGenerator>
             {
-                CreateGenerator("../templates/template1.txt", "../dict/cz", _commandStore),
-                CreateGenerator("../templates/template2.txt", "../dict/words", _commandStore),
-                CreateGenerator("../templates/template3.txt", "../dict/words", _commandStore),
-                CreateGenerator("../templates/template4.txt", "../dict/cz", _commandStore),
-                CreateGenerator("../templates/american.txt", "../dict/words", _commandStore),
-                CreateGenerator("../templates/british.txt", "../dict/words", _commandStore),
-                CreateGenerator("../templates/japanese.txt", "../dict/words", _commandStore)
+                await CreateGeneratorAsync("../templates/template1.txt", "../dict/cz", _commandStore),
+                await CreateGeneratorAsync("../templates/template2.txt", "../dict/words", _commandStore),
+                await CreateGeneratorAsync("../templates/template3.txt", "../dict/words", _commandStore),
+                await CreateGeneratorAsync("../templates/template4.txt", "../dict/cz", _commandStore),
+                await CreateGeneratorAsync("../templates/american.txt", "../dict/words", _commandStore),
+                await CreateGeneratorAsync("../templates/british.txt", "../dict/words", _commandStore),
+                await CreateGeneratorAsync("../templates/japanese.txt", "../dict/words", _commandStore)
             };
         //command reader
-        const int maxSolutionsCount = 100;
+        const int maxSolutionsCount = 10000;
         var ri = new ReadInput(_commandStore);
-        Task.Run(() => ri.Run());
+        var t = Task.Run(() => ri.Run());
 
         var tasks =
             generators.Select(gen1 => Task.Factory.StartNew(() =>
@@ -122,8 +122,8 @@ class Program
     }
 
 
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
-        new Program().Run();
+        await new Program().RunAsync();
     }
 }

@@ -9,7 +9,7 @@ using System.Reflection;
 [assembly: AssemblyTitle("CrossWord")]
 [assembly: AssemblyDescription("CrossWord generator")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Luboš Karásek")]
+[assembly: AssemblyCompany("Lubos Karasek")]
 [assembly: AssemblyProduct("")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
@@ -22,7 +22,7 @@ using System.Reflection;
 // You can specify all values by your own or you can build default build and revision
 // numbers with the '*' character (the default):
 
-[assembly: AssemblyVersion("0.1.0.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
 
 // The following attributes specify the key for the sign of your assembly. See the
 // .NET Framework documentation for more information about signing.

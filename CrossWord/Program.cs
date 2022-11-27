@@ -1,38 +1,76 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
+using System.Runtime.CompilerServices;
 
 namespace CrossWord;
 
 static class Program
 {
-    public static int Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
-        Console.WriteLine("CrossWord ver. {0} ", "1.0");
+        var fileBoardOption = new Option<FileInfo>(name: "--input", description: "Input file with board template",
+            isDefault: true, parseArgument: ParseExistingFile);
+        var fileDictionaryOption = new Option<FileInfo>(name: "--dictionary", description: "Dictionary file",
+            isDefault: true, parseArgument: ParseExistingFile);
+        var fileOutputOption = new Option<FileInfo>(name: "--output", description: "Output file");
+        var puzzleOption = new Option<string?>(name: "--puzzle", description: "Puzzle");
 
-        if (!ParseInput(args, out var inputFile, out var outputFile, out var puzzle, out var dictionaryFile))
+        var rootCommand = new RootCommand("Puzzle generator app");
+        rootCommand.AddOption(fileBoardOption);
+        rootCommand.AddOption(fileDictionaryOption);
+        rootCommand.AddOption(fileOutputOption);
+        rootCommand.AddOption(puzzleOption);
+
+        int returnCode = 0;
+
+        rootCommand.SetHandler(async (boardFile, dictionaryFile, outputFile, puzzle) =>
         {
-            return 1;
-        }
+            returnCode = await Generate(boardFile, dictionaryFile, outputFile, puzzle);
+        }, fileBoardOption, fileDictionaryOption, fileOutputOption, puzzleOption);
 
+        await rootCommand.InvokeAsync(args);
+        return returnCode;
+    }
+
+    static FileInfo ParseExistingFile(ArgumentResult result)
+    {
+        if (result.Tokens.Count == 0)
+        {
+            result.ErrorMessage = $"Missing argument for {result.Argument.Name}";
+            return new ("error");
+        }
+        string? filePath = result.Tokens.Single().Value;
+        if (!File.Exists(filePath))
+        {
+            result.ErrorMessage = "File does not exist";
+            return new ("error");
+        }
+        return new (filePath);
+    }
+
+    static async Task<int> Generate(FileInfo boardFile, FileInfo dictionaryFile, FileInfo outputFile, string? puzzle)
+    {
         ICrossBoard board;
         try
         {
-            board = CrossBoardCreator.CreateFromFile(inputFile!);
+            board = await CrossBoardCreator.CreateFromFileAsync(boardFile.FullName);
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Cannot load crossword layout from file {inputFile}.", e);
+            Console.WriteLine($"Cannot load crossword layout from file {boardFile}.", e);
             return 2;
         }
 
         Dictionary dictionary;
         try
         {
-            dictionary = new Dictionary(dictionaryFile, board.MaxWordLength);
+            dictionary = new Dictionary(dictionaryFile.FullName, board.MaxWordLength);
         }
         catch (Exception e)
         {
@@ -55,50 +93,21 @@ static class Program
 
         if (resultBoard == null)
         {
-            Console.WriteLine(string.Format("No solution has been found."));
+            Console.WriteLine("No solution has been found.");
             return 5;
         }
 
         try
         {
-            SaveResultToFile(outputFile!, resultBoard, dictionary);
+            SaveResultToFile(outputFile.FullName, resultBoard, dictionary);
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Saving result crossword to file {outputFile} has failed.", e);
+            Console.WriteLine($"Saving result crossword to file {outputFile} has failed: {e.Message}.");
             return 6;
         }
 
         return 0;
-    }
-
-    static bool ParseInput(IEnumerable<string> args, out string inputFile, out string outputFile,
-        out string? puzzle,
-        out string dictionary)
-    {
-        bool help = false;
-        string? i = null, o = null, p = null, d = null;
-        var optionSet = new NDesk.Options.OptionSet
-            {
-                {"i|input=", "(input file)", v => i = v},
-                {"d|dictionary=", "(dictionary)", v => d = v},
-                {"o|output=", "(output file)", v => o = v},
-                {"p|puzzle=", "(puzze)", v => p = v},
-                {"h|?|help", "(help)", v => help = v != null},
-            };
-        var unparsed = optionSet.Parse(args);
-        inputFile = i!;
-        outputFile = o!;
-        puzzle = p;
-        dictionary = d!;
-        if (help || unparsed.Count > 1 || string.IsNullOrEmpty(inputFile) ||
-            string.IsNullOrEmpty(outputFile) || string.IsNullOrEmpty(dictionary))
-        {
-            optionSet.WriteOptionDescriptions(Console.Out);
-            return false;
-        }
-
-        return true;
     }
 
     static ICrossBoard? GenerateFirstCrossWord(ICrossBoard board, ICrossDictionary dictionary)
@@ -126,7 +135,7 @@ static class Program
                     cts.Cancel();
                     mre.Set();
                     break; //interested in the first one
-                    }
+                }
             }, cts.Token);
             if (cts.IsCancellationRequested)
                 break;
@@ -138,7 +147,7 @@ static class Program
 
     static void SaveResultToFile(string outputFile, ICrossBoard resultBoard, ICrossDictionary dictionary)
     {
-        Console.WriteLine("Solution has been found:");
+        Console.WriteLine($"Solution has been writen to file {outputFile}.");
         using var writer = new StreamWriter(new FileStream(outputFile, FileMode.Create));
         resultBoard.WriteTo(writer);
         resultBoard.WritePatternsTo(writer, dictionary);

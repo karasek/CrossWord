@@ -1,25 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CrossWord;
 
 public static class CrossBoardCreator
 {
-    public static ICrossBoard CreateFromFile(string path)
+    public static async Task<ICrossBoard> CreateFromFileAsync(string path)
     {
-        using var fs = File.OpenRead(path);
-        return CreateFromStream(fs);
+        await using var fs = File.OpenRead(path);
+        return await CreateFromStreamAsync(fs);
     }
 
-    public static ICrossBoard CreateFromStream(Stream s)
+    public static async Task<ICrossBoard> CreateFromStreamAsync(Stream s)
     {
         var r = new StreamReader(s, Encoding.UTF8);
         var lines = new List<string>();
         while (true)
         {
-            var line = r.ReadLine();
+            var line = await r.ReadLineAsync();
             if (string.IsNullOrEmpty(line)) break;
             lines.Add(line);
         }
@@ -30,8 +30,7 @@ public static class CrossBoardCreator
             if (lineLength == -1)
                 lineLength = lines[i].Length;
             else if (lines[i].Length != lineLength)
-                throw new Exception(
-                    $"Line {i} has different length ({lines[i]}) then previous lines ({lineLength})");
+                throw new ($"Line {i} has different length ({lines[i]}) then previous lines ({lineLength})");
         }
 
         ICrossBoard board = new CrossBoard(lineLength, lines.Count);

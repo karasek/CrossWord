@@ -65,7 +65,7 @@ public class CrossTest
             w.WriteLine("   --");
             w.Flush();
             memoryStream.Position = 0;
-            var board = CrossBoardCreator.CreateFromStream(memoryStream);
+            var board = CrossBoardCreator.CreateFromStreamAsync(memoryStream);
             Assert.True(board != null);
         }
     }
