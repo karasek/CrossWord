@@ -10,9 +10,6 @@ public class CrossPattern
     readonly int _startX;
     readonly int _startY;
 
-    int _instantiationCount;
-    char[] _pattern;
-
     public CrossPattern(int startX, int startY, int length, bool isHorizontal)
     {
         _startX = startX;
@@ -20,7 +17,7 @@ public class CrossPattern
         _length = length;
         AdjacentPatterns = new CrossPattern[_length];
         _isHorizontal = isHorizontal;
-        _pattern = Enumerable.Repeat('.', length).ToArray();
+        Pattern = Enumerable.Repeat('.', length).ToArray();
     }
 
     public static CrossPattern Empty { get; } = new CrossPattern(0, 0, 0, false);
@@ -31,24 +28,16 @@ public class CrossPattern
 
     public int Length => _length;
 
-    public char[] Pattern
-    {
-        get => _pattern;
-        set => _pattern = value;
-    }
+    public char[] Pattern { get; set; }
 
-    public int InstantiationCount
-    {
-        get => _instantiationCount;
-        set => _instantiationCount = value;
-    }
+    public int InstantiationCount { get; set; }
 
-    public CrossPattern[] AdjacentPatterns { get; }
+    public CrossPattern?[] AdjacentPatterns { get; }
 
     public CrossTransformation? TryFillPuzzle(ReadOnlySpan<char> word, ICrossDictionary dict)
     {
         for (int i = 0; i < word.Length; i++)
-            if (_pattern[i] != '.')
+            if (Pattern[i] != '.')
                 return null;
         return TryFill("", word, dict, true);
     }
@@ -64,26 +53,27 @@ public class CrossPattern
         int instSum = 0;
         for (int i = 0; i < word.Length; i++)
         {
-            if (_pattern[i] == '.')
+            if (Pattern[i] == '.')
             {
-                if (AdjacentPatterns[i] != null)
+                var adjacentPattern = AdjacentPatterns[i];
+                if (adjacentPattern != null)
                 {
                     int adjIndex;
                     if (_isHorizontal)
-                        adjIndex = _startY - AdjacentPatterns[i].StartY;
+                        adjIndex = _startY - adjacentPattern.StartY;
                     else
-                        adjIndex = _startX - AdjacentPatterns[i].StartX;
-                    char c = AdjacentPatterns[i].Pattern[adjIndex];
+                        adjIndex = _startX - adjacentPattern.StartX;
+                    char c = adjacentPattern.Pattern[adjIndex];
                     if (c == '.')
                     {
-                        char[] adjacent = AdjacentPatterns[i].Pattern;
+                        char[] adjacent = adjacentPattern.Pattern;
                         adjacent[adjIndex] = word[i];
                         int newInstCount = dict.GetMatchCount(adjacent);
                         adjacent[adjIndex] = '.';
                         if (newInstCount == 0)
                             return null;
                         instSum += newInstCount;
-                        trans.AddChangeInstantiation(i, AdjacentPatterns[i].InstantiationCount, newInstCount);
+                        trans.AddChangeInstantiation(i, adjacentPattern.InstantiationCount, newInstCount);
                         trans.AddChange(i, adjIndex, word[i]);
                     }
                     else if (puzzle || c != word[i])
@@ -96,27 +86,27 @@ public class CrossPattern
             }
         }
 
-        trans.AddChangeInstantiation(-1, _instantiationCount, (int)Constants.Unbounded);
+        trans.AddChangeInstantiation(-1, InstantiationCount, (int)Constants.Unbounded);
         trans.SumInst = instSum;
         return trans;
     }
 
     public override string ToString()
     {
-        return (_isHorizontal ? "-" : "|") + $",{_startX},{_startY}," + new string(_pattern);
+        return (_isHorizontal ? "-" : "|") + $",{_startX},{_startY}," + new string(Pattern);
     }
 
     public object Clone()
     {
         var result = new CrossPattern(_startX, _startY, _length, _isHorizontal);
-        result._instantiationCount = _instantiationCount;
-        result._pattern = new char[_pattern.Length];
-        Array.Copy(_pattern, result._pattern, _pattern.Length);
+        result.InstantiationCount = InstantiationCount;
+        result.Pattern = new char[Pattern.Length];
+        Array.Copy(Pattern, result.Pattern, Pattern.Length);
         return result;
     }
 
     public string GetWord()
     {
-        return new string(_pattern);
+        return new string(Pattern);
     }
 }

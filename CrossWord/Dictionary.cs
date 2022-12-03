@@ -5,7 +5,7 @@ using System.IO;
 
 namespace CrossWord;
 
-public class Dictionary : object, ICrossDictionary
+public class Dictionary : ICrossDictionary
 {
     readonly WordFilter _filter;
     readonly List<string>[] _words; //different array list for each word length
@@ -65,16 +65,16 @@ public class Dictionary : object, ICrossDictionary
         return _description.TryGetValue(word, out description);
     }
 
-    public void AddWord(string aWord)
+    public void AddWord(string word)
     {
-        if (!_filter.Filter(aWord)) return;
-        _indexes[aWord.Length].IndexWord(aWord, _words[aWord.Length].Count);
-        _words[aWord.Length].Add(aWord);
+        if (!_filter.Filter(word)) return;
+        _indexes[word.Length].IndexWord(word, _words[word.Length].Count);
+        _words[word.Length].Add(word);
     }
 
-    public int GetWordOfLengthCount(int aLength)
+    public int GetWordOfLengthCount(int length)
     {
-        return _words[aLength].Count;
+        return _words[length].Count;
     }
 
     static bool IsEmptyPattern(ReadOnlySpan<char> pattern)
@@ -101,7 +101,6 @@ public class Dictionary : object, ICrossDictionary
         }
 
         var indexes = _indexes[pattern.Length].AddMatched(pattern);
-        if (indexes == null) return;
         foreach (var idx in indexes)
         {
             matched.Add(_words[pattern.Length][idx]);

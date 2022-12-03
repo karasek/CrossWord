@@ -42,7 +42,7 @@ public class CrossTransformation : object
             if (adjIdx == -1)
                 pattern = aCrossPattern.Pattern;
             else
-                pattern = aCrossPattern.AdjacentPatterns[adjIdx].Pattern;
+                pattern = aCrossPattern.AdjacentPatterns[adjIdx]!.Pattern;
             pattern[pos] = newChar;
         }
 
@@ -52,20 +52,17 @@ public class CrossTransformation : object
             var newInst = _instChanges[i + 2];
             if (adjIdx != -1)
             {
-                aCrossPattern.AdjacentPatterns[adjIdx].InstantiationCount = newInst;
+                aCrossPattern.AdjacentPatterns[adjIdx]!.InstantiationCount = newInst;
             }
             else
             {
                 aCrossPattern.InstantiationCount = newInst;
             }
         }
-
-        //Console.WriteLine("Transform: {0}", new String(aCrossPattern.Pattern));
     }
 
     public void Undo(CrossPattern aCrossPattern)
     {
-        //Console.WriteLine("Undo: {0}", new String(aCrossPattern.Pattern));
         for (int i = 0; i < _changes.Count; i += 3)
         {
             var adjIdx = _changes[i];
@@ -74,7 +71,7 @@ public class CrossTransformation : object
             if (adjIdx == -1)
                 pattern = aCrossPattern.Pattern;
             else
-                pattern = aCrossPattern.AdjacentPatterns[adjIdx].Pattern;
+                pattern = aCrossPattern.AdjacentPatterns[adjIdx]!.Pattern;
             pattern[pos] = '.';
         }
 
@@ -83,7 +80,7 @@ public class CrossTransformation : object
             var adjIdx = _instChanges[i];
             var old = _instChanges[i + 1];
             if (adjIdx != -1)
-                aCrossPattern.AdjacentPatterns[adjIdx].InstantiationCount = old;
+                aCrossPattern.AdjacentPatterns[adjIdx]!.InstantiationCount = old;
             else
                 aCrossPattern.InstantiationCount = old;
         }

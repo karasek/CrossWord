@@ -109,7 +109,7 @@ public class WordIndex
     }
 
 
-    public ICollection<int>? AddMatched(ReadOnlySpan<char> pattern)
+    public ICollection<int> AddMatched(ReadOnlySpan<char> pattern)
     {
         unsafe
         {
@@ -119,12 +119,12 @@ public class WordIndex
             {
                 char c = pattern[i];
                 if (c == '.') continue;
-                if (!_index[i].TryGetValue(c, out var list))
-                    return null;
+                if (!_index[i].TryGetValue(c, out var _))
+                    return Array.Empty<int>();
                 toMerge[toMergeCount++] = new SkipListId(i, c);
             }
 
-            if (toMergeCount == 0) return null;
+            if (toMergeCount == 0) return Array.Empty<int>();
             return Merge(toMerge, toMergeCount);
         }
     }

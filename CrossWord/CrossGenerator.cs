@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace CrossWord;
 
@@ -32,31 +33,20 @@ public class CrossGenerator
       3. Choosing where to backtrack to when we reach an impasse.
      */
 
-    public IEnumerable<ICrossBoard> Generate()
+    public IEnumerable<ICrossBoard> Generate(CancellationToken cancellationToken)
     {
         var history = new List<int>();
         var historyTrans = new List<List<CrossTransformation>>();
-        var matchingWords = new List<string>();
         var usedWords = new HashSet<string>();
+
         var pattern = _board.GetMostConstrainedPattern(_dict);
         while (true)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             DoCommands();
             if (pattern != null)
             {
-                matchingWords.Clear();
-                _dict.GetMatch(pattern.Pattern, matchingWords);
-                var succTrans = new List<CrossTransformation>();
-                foreach (string t in matchingWords)
-                {
-                    if (usedWords.Contains(t)) continue;
-                    var trans = pattern.TryFill(t, t.AsSpan(), _dict);
-                    if (trans != null)
-                    {
-                        succTrans.Add(trans);
-                        trans.Pattern = pattern;
-                    }
-                }
+                var succTrans = FindPossibleCrossTransformations(pattern, usedWords);
 
                 if (succTrans.Count > 0)
                 {
@@ -83,6 +73,23 @@ public class CrossGenerator
                     yield break;
             }
         }
+    }
+
+    List<CrossTransformation> FindPossibleCrossTransformations(CrossPattern pattern, HashSet<string> usedWords)
+    {
+        var matchingWords = new List<string>();
+        _dict.GetMatch(pattern.Pattern, matchingWords);
+        var succTrans = new List<CrossTransformation>();
+        foreach (string t in matchingWords)
+        {
+            if (usedWords.Contains(t)) continue;
+            var trans = pattern.TryFill(t, t.AsSpan(), _dict);
+            if (trans == null) continue;
+            succTrans.Add(trans);
+            trans.Pattern = pattern;
+        }
+
+        return succTrans;
     }
 
     CrossPattern? BackTrack(List<int> history, List<List<CrossTransformation>> historyTrans,

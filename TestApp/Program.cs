@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CrossWord.TestApp;
@@ -15,9 +16,8 @@ class Program
         _commandStore = new CommandStore();
     }
 
-    async Task<CrossGenerator> CreateGeneratorAsync(string file, string dictFile, CommandStore commands)
+    async Task<CrossGenerator> CreateGeneratorAsync(string file, string dictFile)
     {
-        DateTime startTime = DateTime.Now;
         var cb = await CrossBoardCreator.CreateFromFileAsync(file);
         var dict = new Dictionary(dictFile, cb.MaxWordLength);
         cb.Preprocess(dict);
@@ -71,7 +71,7 @@ class Program
     void GenerateAndOutput(CrossGenerator generator, CommandStore commands, int maxSolutionsCount)
     {
         int solutionsCount = 0;
-        foreach (var solution in generator.Generate())
+        foreach (var solution in generator.Generate(CancellationToken.None))
         {
             // lock (commands.Lock)
             // {
@@ -80,15 +80,9 @@ class Program
             //         solution.WriteTo(w);
             // }
 
-            if (++solutionsCount == maxSolutionsCount)
-            {
-                Console.WriteLine($"{solutionsCount} solutions found.");
-                break;
-            }
+            if (++solutionsCount == maxSolutionsCount) break;
         }
-
-        if (solutionsCount == 0)
-            Console.WriteLine("Solution not found:");
+        Console.WriteLine($"{solutionsCount} solutions found.");
     }
 
     async Task RunAsync()
@@ -97,15 +91,15 @@ class Program
         DateTime startTime = DateTime.Now;
 
         var generators = new List<CrossGenerator>
-            {
-                await CreateGeneratorAsync("../templates/template1.txt", "../dict/cz", _commandStore),
-                await CreateGeneratorAsync("../templates/template2.txt", "../dict/words", _commandStore),
-                await CreateGeneratorAsync("../templates/template3.txt", "../dict/words", _commandStore),
-                await CreateGeneratorAsync("../templates/template4.txt", "../dict/cz", _commandStore),
-                await CreateGeneratorAsync("../templates/american.txt", "../dict/words", _commandStore),
-                await CreateGeneratorAsync("../templates/british.txt", "../dict/words", _commandStore),
-                await CreateGeneratorAsync("../templates/japanese.txt", "../dict/words", _commandStore)
-            };
+        {
+            await CreateGeneratorAsync("../templates/template1.txt", "../dict/cz"),
+            await CreateGeneratorAsync("../templates/template2.txt", "../dict/words"),
+            await CreateGeneratorAsync("../templates/template3.txt", "../dict/words"),
+            await CreateGeneratorAsync("../templates/template4.txt", "../dict/cz"),
+            await CreateGeneratorAsync("../templates/american.txt", "../dict/words"),
+            await CreateGeneratorAsync("../templates/british.txt", "../dict/words"),
+            await CreateGeneratorAsync("../templates/japanese.txt", "../dict/words")
+        };
         //command reader
         const int maxSolutionsCount = 10000;
         var ri = new ReadInput(_commandStore);

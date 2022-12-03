@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using System.Dynamic;
 using System.Runtime.CompilerServices;
 
 namespace CrossWord;
@@ -87,7 +88,7 @@ static class Program
         }
         catch (Exception e)
         {
-            Console.WriteLine("Generating crossword has failed.", e);
+            Console.WriteLine($"Generating crossword has failed. (${e.Message})");
             return 4;
         }
 
@@ -114,7 +115,7 @@ static class Program
     {
         var gen = new CrossGenerator(dictionary, board);
         board.Preprocess(dictionary);
-        return gen.Generate().FirstOrDefault();
+        return gen.Generate(CancellationToken.None).FirstOrDefault();
     }
 
     static ICrossBoard GenerateFirstCrossWord(ICrossBoard board, ICrossDictionary dictionary, string puzzle)
@@ -125,17 +126,17 @@ static class Program
         ICrossBoard? successFullBoard = null;
         foreach (var boardWithPuzzle in placer.GetAllPossiblePlacements(dictionary))
         {
-            //boardWithPuzzle.WriteTo(new StreamWriter(Console.OpenStandardOutput(), Console.OutputEncoding) { AutoFlush = true });
             var gen = new CrossGenerator(dictionary, boardWithPuzzle);
-            var t = Task.Factory.StartNew(() =>
+            var _ = Task.Factory.StartNew(() =>
             {
-                foreach (var solution in gen.Generate())
+                var solution = gen.Generate(cts.Token).FirstOrDefault();
+                if (solution != null)
                 {
                     successFullBoard = solution;
                     cts.Cancel();
                     mre.Set();
-                    break; //interested in the first one
                 }
+
             }, cts.Token);
             if (cts.IsCancellationRequested)
                 break;

@@ -28,9 +28,9 @@ public class YXStartWordComparer : IComparer<StartWord>
 
 public class CrossBoard : ICrossBoard
 {
-    int _sizeX;
-    int _sizeY;
-    List<StartWord> _startWords; //StartWord
+    readonly int _sizeX;
+    readonly int _sizeY;
+    readonly List<StartWord> _startWords; //StartWord
 
     List<CrossPattern> _horizontalPatterns;
     List<CrossPattern> _verticalPatterns;
@@ -64,13 +64,11 @@ public class CrossBoard : ICrossBoard
             while (wordIdx < _startWords.Count)
             {
                 var sw = _startWords[wordIdx];
-                //Console.WriteLine("StartWord x:{0} y:{1} idx:{2}/cnt:{3}",sw.StartX,sw.StartY,wordIdx,_startWords.Count);
                 if (sw.StartY == y)
                 {
                     if (sw.StartX - nextX >= MinPatternLength)
                     {
                         var cp = new CrossPattern(nextX, y, sw.StartX - nextX, true);
-                        //Console.WriteLine("SW pattern startX: {0} startY: {1} len: {2}",cp.StartX, cp.StartY, cp.Length);
                         _horizontalPatterns.Add(cp);
                     }
 
@@ -86,7 +84,6 @@ public class CrossBoard : ICrossBoard
             if (_sizeX - nextX >= MinPatternLength)
             {
                 var cp = new CrossPattern(nextX, y, _sizeX - nextX, true);
-                //Console.WriteLine("EL pattern startX: {0} startY: {1} len: {2}",cp.StartX, cp.StartY, cp.Length);
                 _horizontalPatterns.Add(cp);
             }
         }
@@ -101,13 +98,11 @@ public class CrossBoard : ICrossBoard
             while (wordIdx < _startWords.Count)
             {
                 var sw = _startWords[wordIdx];
-                //Console.WriteLine("StartWord x:{0} y:{1} idx:{2}/cnt:{3}",sw.StartX,sw.StartY,wordIdx,_startWords.Count);
                 if (sw.StartX == x)
                 {
                     if (sw.StartY - nextY >= MinPatternLength)
                     {
                         var cp = new CrossPattern(x, nextY, sw.StartY - nextY, false);
-                        //Console.WriteLine("SW patternY startX: {0} startY: {1} len: {2}",cp.StartX, cp.StartY, cp.Length);
                         _verticalPatterns.Add(cp);
                     }
 
@@ -123,7 +118,6 @@ public class CrossBoard : ICrossBoard
             if (_sizeY - nextY >= MinPatternLength)
             {
                 var cp = new CrossPattern(x, nextY, _sizeY - nextY, false);
-                //Console.WriteLine("EL patternY startX: {0} startY: {1} len: {2}",cp.StartX, cp.StartY, cp.Length);
                 _verticalPatterns.Add(cp);
             }
         }
@@ -151,7 +145,6 @@ public class CrossBoard : ICrossBoard
                     //adjacent
                     hor.AdjacentPatterns[ver.StartX - hor.StartX] = ver;
                     ver.AdjacentPatterns[hor.StartY - ver.StartY] = hor;
-                    //Console.WriteLine("New dep for startX: {0} startY: {1} and startX {2} start Y {3} ",hor.StartX, hor.StartY, ver.StartX, ver.StartY);
                 }
             }
         }
