@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace CrossWord;
 
@@ -221,12 +222,16 @@ public class CrossBoard : ICrossBoard
             }
         }
 
+        StringBuilder sb = new();
         for (int y = 0; y < _sizeY; y++)
         {
-            string row = "";
             for (int x = 0; x < _sizeX; x++)
-                row += board[x, y] + " ";
-            writer.WriteLine("{0:00}: {1}", y, row);
+            {
+                sb.Append(board[x, y]);
+                sb.Append(' ');
+            }
+            writer.WriteLine("{0:00}: {1}", y, sb);
+            sb.Clear();
         }
 
         writer.WriteLine();

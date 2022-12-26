@@ -12,7 +12,7 @@ public class CrossTransformationComparer : IComparer<CrossTransformation>
     }
 }
 
-public class CrossTransformation : object
+public class CrossTransformation
 {
     readonly IList<int> _changes;
     readonly IList<int> _instChanges;

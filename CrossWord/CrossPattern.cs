@@ -47,46 +47,48 @@ public class CrossPattern
         return TryFill(dictWord, word, dict, false);
     }
 
+    int CalcAdjacentIndex(CrossPattern other)
+    {
+        if (_isHorizontal)
+            return _startY - other.StartY;
+        return _startX - other.StartX;
+    }
+
     CrossTransformation? TryFill(string dictWord, ReadOnlySpan<char> word, ICrossDictionary dict, bool puzzle)
     {
         var trans = new CrossTransformation(dictWord);
         int instSum = 0;
         for (int i = 0; i < word.Length; i++)
         {
-            if (Pattern[i] == '.')
-            {
-                var adjacentPattern = AdjacentPatterns[i];
-                if (adjacentPattern != null)
-                {
-                    int adjIndex;
-                    if (_isHorizontal)
-                        adjIndex = _startY - adjacentPattern.StartY;
-                    else
-                        adjIndex = _startX - adjacentPattern.StartX;
-                    char c = adjacentPattern.Pattern[adjIndex];
-                    if (c == '.')
-                    {
-                        char[] adjacent = adjacentPattern.Pattern;
-                        adjacent[adjIndex] = word[i];
-                        int newInstCount = dict.GetMatchCount(adjacent);
-                        adjacent[adjIndex] = '.';
-                        if (newInstCount == 0)
-                            return null;
-                        instSum += newInstCount;
-                        trans.AddChangeInstantiation(i, adjacentPattern.InstantiationCount, newInstCount);
-                        trans.AddChange(i, adjIndex, word[i]);
-                    }
-                    else if (puzzle || c != word[i])
-                    {
-                        return null;
-                    }
-                }
+            if (Pattern[i] != '.') continue;
 
-                trans.AddChange(-1, i, word[i]);
+            var adjacentPattern = AdjacentPatterns[i];
+            if (adjacentPattern != null)
+            {
+                int adjIndex = CalcAdjacentIndex(adjacentPattern);
+                char c = adjacentPattern.Pattern[adjIndex];
+                if (c == '.')
+                {
+                    char[] adjacent = adjacentPattern.Pattern;
+                    adjacent[adjIndex] = word[i];
+                    int newInstCount = dict.GetMatchCount(adjacent);
+                    adjacent[adjIndex] = '.';
+                    if (newInstCount == 0)
+                        return null;
+                    instSum += newInstCount;
+                    trans.AddChangeInstantiation(i, adjacentPattern.InstantiationCount, newInstCount);
+                    trans.AddChange(i, adjIndex, word[i]);
+                }
+                else if (puzzle || c != word[i])
+                {
+                    return null;
+                }
             }
+
+            trans.AddChange(-1, i, word[i]);
         }
 
-        trans.AddChangeInstantiation(-1, InstantiationCount, (int)Constants.Unbounded);
+        trans.AddChangeInstantiation(-1, InstantiationCount, (int) Constants.Unbounded);
         trans.SumInst = instSum;
         return trans;
     }
